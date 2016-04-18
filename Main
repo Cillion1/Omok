@@ -1,0 +1,110 @@
+import java.util.Scanner;
+
+public class Main {
+
+	static Scanner keyb = new Scanner(System.in);
+	static int turnCount = 1;
+	static char alphabetInput;
+	
+	public static void main(String[] args) {
+		printIntro();
+		startGame();
+		printPlayerStat();
+		boardSetup();
+	}
+	
+	public static void printBoard(char[][] data) {
+        for (int row = 0; row < data.length; row++) {
+            for (int col = 0; col < data[row].length; col++) {
+                System.out.print(data[row][col] + " ");
+            }
+            System.out.println("");
+        }
+    }  
+	
+	public static void printIntro() { // Prints intro of game
+		System.out.println("Omok!");
+		System.out.println("");
+		System.out.println("Instructions:");
+		System.out.println("");
+		System.out.println("To play omok, each player takes turn to place pieces on the board. "
+				+ "Getting 5 pieces in a line either vertically, horizontally, or diagonally will achieve a win.");
+		System.out.println("");
+		System.out.println("Play (S)");
+		System.out.println("");
+		System.out.println("Enter your choice: ");
+	}
+	
+	public static void startGame() {
+		char gameStart = 0;
+		do {
+			try {
+				String numberStart = keyb.next();
+				if (numberStart.equalsIgnoreCase("s")) {
+					gameStart = 1;
+				} else {
+					System.out.println("Invalid Command!");
+				}
+			}
+			catch (Exception e) {
+				System.out.println("Invalid Command!");
+			}
+		} while (gameStart != 1);
+	}
+	
+	public static void printPlayerStat() { // Set Player name and stats
+		System.out.println("Type Player 1’s username: ");
+		String setPlayerOne = keyb.next();
+		Player playerOne = new Player();
+		playerOne.name = setPlayerOne;
+		System.out.println("Player: " + playerOne.name) ;
+		System.out.println("Wins: " + playerOne.win);
+		System.out.println("Loss: " + playerOne.loss);
+		System.out.println("Total Games: " + playerOne.total);
+		System.out.println("Win Streak: " + playerOne.winStreak);
+		System.out.println("");
+		System.out.println("Type Player 2’s username: ");
+		String setPlayerTwo = keyb.next();
+		Player playerTwo = new Player();
+		playerTwo.name = setPlayerTwo;
+		System.out.println("Player: " + playerTwo.name) ;
+		System.out.println("Wins: " + playerTwo.win);
+		System.out.println("Loss: " + playerTwo.loss);
+		System.out.println("Total Games: " + playerOne.total);
+		System.out.println("Win Streak: " + playerOne.winStreak);
+		System.out.println("Type S to start.");
+		char gameStart = 0;
+		do {
+			try {
+				String numberStart = keyb.next();
+				if (numberStart.equalsIgnoreCase("s")) {
+					gameStart = 1;
+				} else {
+					System.out.println("Invalid Command!");
+				}
+			}
+			catch (Exception e) {
+				System.out.println("Invalid Command!");
+			}
+		} while (gameStart != 1);
+	}
+	
+    public static void boardSetup() {
+        // Setup the board
+        char[][] data = new char[15][15];
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data[i].length; j++) {
+                data[i][j] = '-';
+            }
+        }
+        System.out.println("");
+        System.out.println("A B C D E F G H I J K L M N O");
+        printBoard(data);
+    }
+    
+    public static int getPosition() {
+		String position = keyb.next();
+		char c = position.toLowerCase().charAt(0);
+		return c - 'a';
+    }      	
+}
