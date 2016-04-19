@@ -103,8 +103,18 @@ public class Main {
     }
     
     public static int getPosition() {
-		String position = keyb.next();
-		char c = position.toLowerCase().charAt(0);
-		return c - 'a';
-    }      	
+    	int letterNumber = 0;
+    	int positionLength = 0;
+    	do {
+			String position = keyb.next();
+			positionLength = position.length();
+			char c = position.toLowerCase().charAt(0);
+			letterNumber = c - 'a';
+			if (letterNumber > 14 || letterNumber < 0 || positionLength > 1) {
+				System.out.println("Invalid Move");
+			}
+		} while (letterNumber > 14 || letterNumber < 0 || positionLength > 1);
+		return letterNumber;
+    }    
+} 	
 }
