@@ -4,7 +4,6 @@ public class Main {
 
 	static Scanner keyb = new Scanner(System.in);
 	static int turnCount = 1;
-	static char alphabetInput;
 	
 	public static void main(String[] args) {
 		printIntro();
@@ -22,7 +21,7 @@ public class Main {
         }
     }  
 	
-	public static void printIntro() { // Prints intro of game
+	public static void printIntro() { // Prints introduction of game
 		System.out.println("Omok!");
 		System.out.println("");
 		System.out.println("Instructions:");
@@ -115,6 +114,5 @@ public class Main {
 			}
 		} while (letterNumber > 14 || letterNumber < 0 || positionLength > 1);
 		return letterNumber;
-    }    
-} 	
+    }    	
 }
