@@ -3,35 +3,20 @@ import java.util.Scanner;
 public class Main {
 
 	static Scanner keyb = new Scanner(System.in);
+	
+	public static String fileName = "PlayerData.txt";
 	static int turnCount = 1;
+	private static char[][] boardPlacement;
+	private final static String playerOne = "X";
+	private final static String playerTwo = "O";
+	public static String piece;
 	
 	public static void main(String[] args) {
 		printIntro();
 		startGame();
 		printPlayerStat();
 		boardSetup();
-	}
-	
-	public static void printBoard(char[][] data) {
-        for (int row = 0; row < data.length; row++) {
-            for (int col = 0; col < data[row].length; col++) {
-                System.out.print(data[row][col] + " ");
-            }
-            System.out.println("");
-        }
-    }  
-	
-	public static void printIntro() { // Prints introduction of game
-		System.out.println("Omok!");
-		System.out.println("");
-		System.out.println("Instructions:");
-		System.out.println("");
-		System.out.println("To play omok, each player takes turn to place pieces on the board. "
-				+ "Getting 5 pieces in a line either vertically, horizontally, or diagonally will achieve a win.");
-		System.out.println("");
-		System.out.println("Play (S)");
-		System.out.println("");
-		System.out.println("Enter your choice: ");
+		placePiece();
 	}
 	
 	public static void startGame() {
@@ -71,6 +56,7 @@ public class Main {
 		System.out.println("Loss: " + playerTwo.loss);
 		System.out.println("Total Games: " + playerOne.total);
 		System.out.println("Win Streak: " + playerOne.winStreak);
+		System.out.println("");
 		System.out.println("Type S to start.");
 		char gameStart = 0;
 		do {
@@ -88,12 +74,35 @@ public class Main {
 		} while (gameStart != 1);
 	}
 	
+	public static void printIntro() { // Prints introduction of game
+		System.out.println("Omok!");
+		System.out.println("");
+		System.out.println("Instructions:");
+		System.out.println("");
+		System.out.println("To play omok, each player takes turn to place pieces on the board. "
+				+ "Getting 5 pieces in a line either vertically, horizontally, or diagonally will achieve a win.");
+		System.out.println("");
+		System.out.println("Play (S)");
+		System.out.println("");
+		System.out.println("Enter your choice: ");
+	}
+	
+	public static void printBoard(char[][] data) {
+		for (int row = 0; row < data.length; row++) {
+			for (int col = 0; col < data[row].length; col++) {
+				System.out.print(data[row][col] + " ");
+			}
+			System.out.println("");
+		}
+	}  
+	
     public static void boardSetup() {
-        // Setup the board
         char[][] data = new char[15][15];
         for (int i = 0; i < data.length; i++) {
             for (int j = 0; j < data[i].length; j++) {
-                data[i][j] = '-';
+            	if (data[i][j] == ' ') {
+            		data[i][j] = '-';
+            	}
             }
         }
         System.out.println("");
@@ -101,7 +110,8 @@ public class Main {
         printBoard(data);
     }
     
-    public static int getPosition() {
+    // Get position of a player
+    public static int getLetterPosition() {
     	int letterNumber = 0;
     	int positionLength = 0;
     	do {
@@ -115,4 +125,15 @@ public class Main {
 		} while (letterNumber > 14 || letterNumber < 0 || positionLength > 1);
 		return letterNumber;
     }    	
+    
+    public static char placePiece() {
+		int x = getLetterPosition();
+		int y = 1;
+		if (boardPlacement[x][y] == 'X' || boardPlacement[x][y] == 'O') {
+			boardPlacement[][] = boardPlacement[x][y];
+		} else {
+			System.out.println("Invalid Move");
+		}
+		return 'X';
+	}
 }
