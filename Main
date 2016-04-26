@@ -3,22 +3,21 @@ import java.util.Scanner;
 public class Main {
 
 	static Scanner keyb = new Scanner(System.in);
-	
+
 	public static String fileName = "PlayerData.txt";
 	static int turnCount = 1;
-	private static char[][] boardPlacement;
-	private final static String playerOne = "X";
-	private final static String playerTwo = "O";
+	static boolean playerTurn = true;
+	private static int[][] boardPlacement;
 	public static String piece;
-	
+
 	public static void main(String[] args) {
 		printIntro();
 		startGame();
-		printPlayerStat();
+		// printPlayerStat();
 		boardSetup();
 		placePiece();
 	}
-	
+
 	public static void startGame() {
 		char gameStart = 0;
 		do {
@@ -29,19 +28,18 @@ public class Main {
 				} else {
 					System.out.println("Invalid Command!");
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				System.out.println("Invalid Command!");
 			}
 		} while (gameStart != 1);
 	}
-	
+
 	public static void printPlayerStat() { // Set Player name and stats
 		System.out.println("Type Player 1’s username: ");
 		String setPlayerOne = keyb.next();
 		Player playerOne = new Player();
 		playerOne.name = setPlayerOne;
-		System.out.println("Player: " + playerOne.name) ;
+		System.out.println("Player: " + playerOne.name);
 		System.out.println("Wins: " + playerOne.win);
 		System.out.println("Loss: " + playerOne.loss);
 		System.out.println("Total Games: " + playerOne.total);
@@ -51,7 +49,7 @@ public class Main {
 		String setPlayerTwo = keyb.next();
 		Player playerTwo = new Player();
 		playerTwo.name = setPlayerTwo;
-		System.out.println("Player: " + playerTwo.name) ;
+		System.out.println("Player: " + playerTwo.name);
 		System.out.println("Wins: " + playerTwo.win);
 		System.out.println("Loss: " + playerTwo.loss);
 		System.out.println("Total Games: " + playerOne.total);
@@ -67,54 +65,58 @@ public class Main {
 				} else {
 					System.out.println("Invalid Command!");
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				System.out.println("Invalid Command!");
 			}
 		} while (gameStart != 1);
 	}
-	
-	public static void printIntro() { // Prints introduction of game
+
+	// Prints introduction of game
+	public static void printIntro() {
 		System.out.println("Omok!");
 		System.out.println("");
 		System.out.println("Instructions:");
 		System.out.println("");
-		System.out.println("To play omok, each player takes turn to place pieces on the board. "
-				+ "Getting 5 pieces in a line either vertically, horizontally, or diagonally will achieve a win.");
+		System.out
+				.println("To play omok, each player takes turn to place pieces on the board. "
+						+ "Getting 5 pieces in a line either vertically, horizontally, or diagonally will achieve a win.");
 		System.out.println("");
 		System.out.println("Play (S)");
 		System.out.println("");
 		System.out.println("Enter your choice: ");
 	}
-	
+
+	// Creates the board from
+	public static void boardSetup() {
+		char[][] data = new char[15][15];
+		for (int i = 0; i < data.length; i++) {
+			for (int j = 0; j < data[i].length; j++) {
+				if (data[i][j] == 'X') {
+					break;
+				}
+			}
+		}
+		System.out.println("");
+		System.out.println(" A B C D E F G H I J K L M N O");
+		printBoard(data);
+	}
+
+	// Prints board to console
 	public static void printBoard(char[][] data) {
 		for (int row = 0; row < data.length; row++) {
 			for (int col = 0; col < data[row].length; col++) {
-				System.out.print(data[row][col] + " ");
+				System.out.print(data[row][col] + "-");
 			}
 			System.out.println("");
 		}
-	}  
-	
-    public static void boardSetup() {
-        char[][] data = new char[15][15];
-        for (int i = 0; i < data.length; i++) {
-            for (int j = 0; j < data[i].length; j++) {
-            	if (data[i][j] == ' ') {
-            		data[i][j] = '-';
-            	}
-            }
-        }
-        System.out.println("");
-        System.out.println("A B C D E F G H I J K L M N O");
-        printBoard(data);
-    }
-    
-    // Get position of a player
-    public static int getLetterPosition() {
-    	int letterNumber = 0;
-    	int positionLength = 0;
-    	do {
+	}
+
+	// Get letter coordinate from player
+	public static int getLetterPosition() {
+		int letterNumber = 0;
+		int positionLength = 0;
+		System.out.println("Type X-Position");
+		do {
 			String position = keyb.next();
 			positionLength = position.length();
 			char c = position.toLowerCase().charAt(0);
@@ -124,16 +126,39 @@ public class Main {
 			}
 		} while (letterNumber > 14 || letterNumber < 0 || positionLength > 1);
 		return letterNumber;
-    }    	
-    
-    public static char placePiece() {
+	}
+
+	// Get number coordinate from player
+	public static int getNumberPosition() {
+		int number = 0;
+		System.out.println("Type Y-Position");
+		do {
+			try {
+				String position = keyb.next();
+				number = Integer.parseInt(position);
+				if (number == 0 || number > 14) {
+					System.out.println("Invalid Move");
+				}
+			} catch (Exception e) {
+				System.out.println("Invalid Move");
+			}
+		} while (number > 14 || number == 0);
+		return number;
+	}
+
+	// Return letter base on position
+	public static boolean placePiece() {
 		int x = getLetterPosition();
-		int y = 1;
-		if (boardPlacement[x][y] == 'X' || boardPlacement[x][y] == 'O') {
-			boardPlacement[][] = boardPlacement[x][y];
+		int y = getNumberPosition();
+		if (boardPlacement[x][y] == '-') {
+			if (playerTurn) {
+				boardPlacement[x][y] = 'X';
+			} else {
+				boardPlacement[x][y] = 'O';
+			}
+			return true;
 		} else {
-			System.out.println("Invalid Move");
+			return false;
 		}
-		return 'X';
 	}
 }
