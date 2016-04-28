@@ -4,20 +4,21 @@ public class Main {
 
 	static Scanner keyb = new Scanner(System.in);
 
-	static char[][] boardPlacement = null;
+	static char[][] gameBoard = null;
 	static boolean playerTurn = true;
 	static boolean test = true;
+	static final int BOARDSIZE = 15;
 
 	public static void main(String[] args) {
-		// printIntro();
-		// startGame();
+		printIntro();
+		startGame();
 		// printPlayerStat();
 			boardSetup();
 		do {
 			placePiece();
-			printBoard(boardPlacement);
-		} while(winCondition());
-		System.out.println("Something");
+			printBoard(gameBoard);
+		} while(isGameWon());
+		System.out.println("Win");
 	}
 
 	public static void startGame() {
@@ -25,7 +26,7 @@ public class Main {
 		do {
 			try {
 				String numberStart = keyb.next();
-				if (numberStart.equalsIgnoreCase("s")) {
+				if (numberStart.equalsIgnoreCase("p")) {
 					gameStart = 1;
 				} else {
 					System.out.println("Invalid Command!");
@@ -38,7 +39,7 @@ public class Main {
 	
 	// Set Player name and stats
 	public static void printPlayerStat() { 
-		System.out.println("Type Player 1’s username: ");
+		System.out.println("Type Player 1â€™s username: ");
 		String setPlayerOne = keyb.next();
 		Player playerOne = new Player();
 		playerOne.name = setPlayerOne;
@@ -48,7 +49,7 @@ public class Main {
 		System.out.println("Total Games: " + playerOne.total);
 		System.out.println("Win Streak: " + playerOne.winStreak);
 		System.out.println("");
-		System.out.println("Type Player 2’s username: ");
+		System.out.println("Type Player 2â€™s username: ");
 		String setPlayerTwo = keyb.next();
 		Player playerTwo = new Player();
 		playerTwo.name = setPlayerTwo;
@@ -84,20 +85,20 @@ public class Main {
 				.println("To play omok, each player takes turn to place pieces on the board. "
 						+ "Getting 5 pieces in a line either vertically, horizontally, or diagonally will achieve a win.");
 		System.out.println("");
-		System.out.println("Play (S)");
+		System.out.println("(P)lay");
 		System.out.println("");
 		System.out.println("Enter your choice: ");
 	}
 
 	// Creates new array making the board
 	public static void boardSetup() {
-		boardPlacement = new char[15][15]; // Declare new array of 15x15
-		for (int i = 0; i < boardPlacement.length; i++) { // Loop row up by one
-			for (int j = 0; j < boardPlacement[i].length; j++) { // In each column, loop the column up by one
-                boardPlacement[i][j] = '-'; // Insert '-' in each index
+		gameBoard = new char[BOARDSIZE][BOARDSIZE]; // Declare new array of BOARDSIZE x BOARDSIZE
+		for (int i = 0; i < gameBoard.length; i++) { // Loop row up by one
+			for (int j = 0; j < gameBoard[i].length; j++) { // In each column, loop the column up by one
+                gameBoard[i][j] = '-'; // Insert '-' in each index
 			}
 		}
-		printBoard(boardPlacement); // Prints the board to the console
+		printBoard(gameBoard); // Prints the board to the console
 	}
 
 	// Prints board to console
@@ -127,10 +128,10 @@ public class Main {
 			positionLength = position.length();
 			char c = position.toLowerCase().charAt(0);
 			letterNumber = c - 'a';
-			if (letterNumber > 15 || letterNumber < 0 || positionLength > 1) {
+			if (letterNumber > BOARDSIZE || letterNumber < 0 || positionLength > 1) {
 				System.out.println("Invalid Move! Must be a letter before P.");
 			}
-		} while (letterNumber > 15 || letterNumber < 0 || positionLength > 1);
+		} while (letterNumber > BOARDSIZE || letterNumber < 0 || positionLength > 1);
 		return letterNumber;
 	}
 
@@ -141,13 +142,13 @@ public class Main {
 			try {
 				String position = keyb.next();
 				number = Integer.parseInt(position);
-				if (number <= 0 || number > 15) {
-					System.out.println("Invalid Move! Must be a positive number less than 15.");
+				if (number <= 0 || number > BOARDSIZE) {
+					System.out.println("Invalid Move! Must be a positive number less than " + BOARDSIZE + ".");
 				}
 			} catch (Exception e) {
 				System.out.println("Invalid Move! Not a possible coordinate.");
 			}
-		} while (number > 15 || number <= 0);
+		} while (number > BOARDSIZE || number <= 0);
 		return number;
 	}
 
@@ -157,12 +158,12 @@ public class Main {
 		int x = getLetterPosition();
 		int y = getNumberPosition() - 1;
 		// Check on if player has already played in position
-		if (boardPlacement[y][x] == '-') {
+		if (gameBoard[y][x] == '-') {
 			if (playerTurn) {
-				boardPlacement[y][x] = 'X';
+				gameBoard[y][x] = 'X';
 				playerTurn = false;
 			} else {
-				boardPlacement[y][x] = 'O';
+				gameBoard[y][x] = 'O';
 				playerTurn = true;
 			}
 			return true;
@@ -174,11 +175,15 @@ public class Main {
 	}
 	
 	// Determine 5 in a row (Win Condition).
-	public static boolean winCondition() {
-		for (int row = 0; row < boardPlacement.length; row++) {
-			for (int col = 0; col < boardPlacement.length; col++) {
-				if (boardPlacement[row][col] == 'X') {
-					return true;
+	public static boolean isGameWon() {
+		for (int row = 0; row < gameBoard.length; row++) {
+			for (int col = 0; col < gameBoard.length; col++) {
+				for (int i = 0; i < 5; i++) {
+					// Count the row up to 5 and check if X is placed in each of the indexes
+					if (gameBoard[row + i][col] == 'X' && i == 5) {
+						return true;
+						
+					}
 				}
 			}
 		}
