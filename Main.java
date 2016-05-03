@@ -6,12 +6,10 @@ public class Main {
 
 	static char[][] gameBoard = null;
 	static boolean playerTurn = true;
-	static boolean test = true;
 	static final int BOARDSIZE = 15;
 
 	public static void main(String[] args) {
 		// printIntro();
-		// startGame();
 		// printPlayerStat();
 		setupBoard();
 		do {
@@ -22,19 +20,19 @@ public class Main {
 	}
 
 	public static void startGame() {
-		char gameStart = 0;
+		boolean gameStart = false;
 		do {
 			try {
 				String numberStart = keyb.next();
 				if (numberStart.equalsIgnoreCase("p")) {
-					gameStart = 1;
+					gameStart = true;
 				} else {
 					System.out.println("Invalid Command!");
 				}
 			} catch (Exception e) {
 				System.out.println("Invalid Command!");
 			}
-		} while (gameStart != 1);
+		} while (!gameStart);
 	}
 
 	// Set Player name and stats
@@ -59,20 +57,8 @@ public class Main {
 		System.out.println("Total Games: " + playerOne.total);
 		System.out.println("Win Streak: " + playerOne.winStreak);
 		System.out.println("");
-		System.out.println("Type S to start.");
-		char gameStart = 0;
-		do {
-			try {
-				String numberStart = keyb.next();
-				if (numberStart.equalsIgnoreCase("s")) {
-					gameStart = 1;
-				} else {
-					System.out.println("Invalid Command!");
-				}
-			} catch (Exception e) {
-				System.out.println("Invalid Command!");
-			}
-		} while (gameStart != 1);
+		System.out.println("Type P to start.");
+		startGame();
 	}
 
 	// Prints introduction of game
@@ -88,16 +74,14 @@ public class Main {
 		System.out.println("(P)lay");
 		System.out.println("");
 		System.out.println("Enter your choice: ");
+		startGame();
 	}
 
 	// Creates new array making the board
 	public static void setupBoard() {
-		gameBoard = new char[BOARDSIZE][BOARDSIZE]; // Declare new array of
-													// BOARDSIZE x BOARDSIZE
+		gameBoard = new char[BOARDSIZE][BOARDSIZE]; // Declare new array of BOARDSIZE x BOARDSIZE
 		for (int i = 0; i < gameBoard.length; i++) { // Loop row up by one
-			for (int j = 0; j < gameBoard[i].length; j++) { // In each column,
-															// loop the column
-															// up by one
+			for (int j = 0; j < gameBoard[i].length; j++) { // In each column, loop the column up by one
 				gameBoard[i][j] = '-'; // Insert '-' in each index
 			}
 		}
@@ -186,15 +170,53 @@ public class Main {
 
 	// Determine 5 in a row (Win Condition).
 	public static boolean isGameWon() {
-		for (int row = 0; row <= gameBoard.length - 5; row++) {
-			for (int col = 0; col <= gameBoard.length - 5; col++) {
-				char letter = gameBoard[row][col];
-				if (gameBoard[row][col] != '-') {
+		// Determine horizontal 5 in a row.
+		for (int col = 0; col <= gameBoard.length - 5; col++) { // loop through the column
+			for (int row = 0; row <= gameBoard.length - 5; row++) { // loop through the row
+				char letter = gameBoard[col][row]; // Assign the character chosen to letter
+				if (gameBoard[col][row] != '-') { // Check to see if index is X or O
 					boolean isWin = true;
-					for (int i = 1; i < 5; i++) {
-						// Count the row up to 5 and check if X is placed in each of
-						// the indexes
-						if (gameBoard[row + i][col] != letter) {
+					for (int i = 1; i < 5; i++) { // Counter up to 5
+						if (gameBoard[col][row + i] != letter) { // Checks if next index equals letter assigned
+							isWin = false; //
+							break;
+						}
+					}
+					if (isWin) {
+						return true;
+					}
+				}
+			}
+		}
+		// Determine vertically 5 in a row.
+		for (int col = 0; col <= gameBoard.length - 5; col++) { // loop through the row
+			for (int row = 0; row <= gameBoard.length - 5; row++) { // loop through the column
+				char letter = gameBoard[col][row]; // Assign the character chosen to letter
+				if (gameBoard[col][row] != '-') { // Check to see if index is X or O
+					boolean isWin = true;
+					for (int i = 1; i < 5; i++) { // Counter up to 5
+						if (gameBoard[col + i][row] != letter) { // Checks if next index equals letter assigned
+							isWin = false;
+							break;
+						}
+					}
+					if (isWin) {
+						return true;
+					}
+				}
+			}
+		}
+		// Determine diagonally 5 in a row.
+		for (int col = 0; col <= gameBoard.length - 5; col++) { // loop through the row
+			for (int row = 0; row <= gameBoard.length - 5; row++) { // loop through the column
+				char letter = gameBoard[col][row]; // Assign the character chosen to letter
+				if (gameBoard[col][row] != '-') { // Check to see if index is X or O
+					boolean isWin = true;
+					for (int i = 1; i < 5; i++) { // Counter up to 5
+						if (gameBoard[col + i][row + i] != letter)  { // Checks if next index equals letter assigned
+							isWin = false;
+							break;
+						} else if (gameBoard[col - i][row - i] != letter) {
 							isWin = false;
 							break;
 						}
