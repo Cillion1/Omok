@@ -216,7 +216,7 @@ public class Main {
 						if (gameBoard[col + i][row + i] != letter)  { // Checks if next index equals letter assigned
 							isWin = false;
 							break;
-						} else if (gameBoard[col - i][row - i] != letter) {
+						} else if (gameBoard[col - i][row + i] != letter) {
 							isWin = false;
 							break;
 						}
