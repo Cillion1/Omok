@@ -1,3 +1,9 @@
+/**
+ * Description: This class runs our game
+ * Author: Dennis
+ * Last Updated: May 5, 2016
+ */
+
 import java.util.Scanner;
 
 public class Main {
@@ -40,16 +46,19 @@ public class Main {
 			playerTurn = true;
 		} while (restartGame);
 	}
-
+	
+	/**
+	 * Get input from the user and check to see if the letter assigned is inputed
+	 */
 	public static void startGame() {
 		boolean gameStart = false;
 		do {
 			try {
 				String numberStart = keyb.next();
-				if (numberStart.equalsIgnoreCase("p")) {
+				if (numberStart.equalsIgnoreCase("p")) { // Checks to see if 'p' is the input
 					gameStart = true;
 				} else {
-					System.out.println("Invalid Command!");
+					System.out.println("Invalid Command!"); // Prints out if input was anything but 'p'.
 				}
 			} catch (Exception e) {
 				System.out.println("Invalid Command!");
@@ -57,7 +66,9 @@ public class Main {
 		} while (!gameStart);
 	}
 
-	// Set Player name and stats
+	/**
+	 * This prints out the players record from the Player class
+	 */
 	public static void printPlayerStat() {
 		System.out.println("Type Player 1’s username: ");
 		String setPlayerOne = keyb.next();
@@ -83,7 +94,9 @@ public class Main {
 		startGame();
 	}
 
-	// Prints introduction of game
+	/**
+	 * Prints out the title introduction screen.
+	 */
 	public static void printIntro() {
 		System.out.println("Omok!");
 		System.out.println("");
@@ -99,7 +112,10 @@ public class Main {
 		startGame();
 	}
 
-	// Creates new array making the board
+	/**
+	 * Creates a new array and inserts '-' to all the indexes
+	 * and prints the board out after
+	 */
 	public static void setupBoard() {
 		gameBoard = new char[BOARDSIZE][BOARDSIZE]; // Declare new array of BOARDSIZE x BOARDSIZE
 		for (int i = 0; i < gameBoard.length; i++) { // Loop row up by one
@@ -110,7 +126,10 @@ public class Main {
 		printBoard(gameBoard); // Prints the board to the console
 	}
 
-	// Prints board to console
+	/**
+	 * Prints the board out and switch players each input
+	 * @param data
+	 */
 	public static void printBoard(char[][] data) {
 		System.out.println("A B C D E F G H I J K L M N O");
 		for (int row = 0; row < data.length; row++) {
@@ -123,6 +142,9 @@ public class Main {
 		isWhoTurn();
 	}
 	
+	/**
+	 * Switch from player one to two and vice versa
+	 */
 	public static void isWhoTurn() {
 		if (!isGameWon()) {
 			if (playerTurn) {
@@ -133,7 +155,10 @@ public class Main {
 		}
 	}
 	
-	// Get letter coordinate from player
+	/**
+	 * Grabs a letter and return the letter as a integer
+	 * @return
+	 */
 	public static int getLetterPosition() {
 		int letterNumber = 0;
 		int positionLength = 0;
@@ -152,7 +177,10 @@ public class Main {
 		return letterNumber;
 	}
 
-	// Get number coordinate from player
+	/**
+	 * Grabs an integer and returns it
+	 * @return
+	 */
 	public static int getNumberPosition() {
 		int number = 0;
 		do {
@@ -160,9 +188,7 @@ public class Main {
 				String position = keyb.next();
 				number = Integer.parseInt(position);
 				if (number <= 0 || number > BOARDSIZE) {
-					System.out
-							.println("Invalid Move! Must be a positive number less than "
-									+ BOARDSIZE + ".");
+					System.out.println("Invalid Move! Must be a positive number less than " + BOARDSIZE + ".");
 				}
 			} catch (Exception e) {
 				System.out.println("Invalid Move! Not a possible coordinate.");
@@ -171,7 +197,9 @@ public class Main {
 		return number;
 	}
 
-	// Returns a piece as X or O and returns whether valid move or not
+	/**
+	 * Inserts two numbers on the 2D array and assign it as X or O
+	 */
 	public static void placePiece() {
 		// Assign numbers from user
 		boolean positionNotTaken = false;
@@ -196,10 +224,14 @@ public class Main {
 		} while (!positionNotTaken);
 	}
 
-	// Determine 5 in a row (Win Condition).
+	/**
+	 * Checks if 5 X's or 5 O's are on the board
+	 * and if the game is won.
+	 * @return true;
+	 */
 	public static boolean isGameWon() {
 		// Determine horizontal 5 in a row.
-		for (int col = 0; col <= gameBoard.length - 5; col++) { 	// loop through the column
+		for (int col = 0; col <= gameBoard.length - 1; col++) { 	// loop through the column
 			for (int row = 0; row <= gameBoard.length - 5; row++) { // loop through the row
 				char letter = gameBoard[col][row]; 					// Assign the character chosen to letter
 				if (gameBoard[col][row] != '-') { 					// Check to see if index is X or O
@@ -217,8 +249,8 @@ public class Main {
 			}
 		}
 		// Determine vertically 5 in a row.
-		for (int col = 4; col <= gameBoard.length - 5; col++) { // loop through the row
-			for (int row = 0; row <= gameBoard.length - 5; row++) { // loop through the column
+		for (int col = 0; col <= gameBoard.length - 5 ; col++) { // loop through the column
+			for (int row = 0; row <= gameBoard.length - 1; row++) { // loop through the row
 				char letter = gameBoard[col][row]; // Assign the character chosen to letter
 				if (gameBoard[col][row] != '-') { // Check to see if index is X or O
 					boolean isWin = true;
@@ -235,13 +267,13 @@ public class Main {
 			}
 		}
 		// Check top-right to bottom-left.
-		for (int col = 0; col <= gameBoard.length - 5; col++) { // loop through the row
-			for (int row = 0; row <= gameBoard.length - 5; row++) { // loop through the column
+		for (int col = 1; col <= gameBoard.length - 5; col++) { // loop through the row
+			for (int row = 1; row <= gameBoard.length - 5; row++) { // loop through the column
 				char letter = gameBoard[col][row]; // Assign the character chosen to letter
 				if (gameBoard[col][row] != '-') { // Check to see if index is X or O
 					boolean isWin = true;
 					for (int i = 1; i < 5; i++) { // Counter up to 5
-						if (gameBoard[col + i][row + i] != letter)  { // Checks if next index equals letter assigned
+						if (gameBoard[col - i][row - i] != letter)  { // Checks if next index equals letter assigned
 							isWin = false;
 							break;
 						}
@@ -253,8 +285,8 @@ public class Main {
 			}
 		}
 		// Check top-left to bottom-right
-		for (int col = 4; col <= gameBoard.length - 5; col++) { // loop through the row
-			for (int row = 0; row <= gameBoard.length - 5; row++) { // loop through the column
+		for (int col = 1; col <= gameBoard.length - 5; col++) { // loop through the row
+			for (int row = 1; row <= gameBoard.length - 5; row++) { // loop through the column
 				char letter = gameBoard[col][row]; // Assign the character chosen to letter
 				if (gameBoard[col][row] != '-') { // Check to see if index is X or O
 					boolean isWin = true;
