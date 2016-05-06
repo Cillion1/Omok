@@ -18,17 +18,21 @@ public class Main {
 	static int turnCount = 0;
 
 	public static void main(String[] args) {
-		printIntro();
-		boolean restartGame = false;
+		// Prints the introduction of the game
+		printIntro(); 
+		boolean restartGame = false; // Variable that restarts the game or not
 		do {
+			// Output player stats and show the board
 			printPlayerStat();
 			setupBoard();
+			// Play until the game is won
 			do {
 				placePiece();
 				printBoard(gameBoard);
 			} while (!isGameWon() || !isGameTied());
+			
 			if (!isGameTied()) {
-				if (!playerTurn) {
+				if (!playerTurn) { // Prints and update status if Player One won.
 					System.out.println("Player 1 Wins");
 					playerOne.win++;
 					playerOne.total++;
@@ -36,7 +40,7 @@ public class Main {
 					playerTwo.loss++;
 					playerTwo.winStreak = 0;
 					playerTwo.total++;
-				} else if (playerTurn) {
+				} else if (playerTurn) { // Prints and update status if Player One won.
 					System.out.println("Player 2 Wins");
 					playerTwo.win++;
 					playerTwo.total++;
@@ -88,7 +92,7 @@ public class Main {
 	 * This prints out the players record from the Player class
 	 */
 	public static void printPlayerStat() {
-		System.out.println("Type Player 1’s username: ");
+		System.out.println("Type Player 1â€™s username: ");
 		String setPlayerOne = keyb.next();
 		playerOne.name = setPlayerOne;
 		System.out.println("Player: " + playerOne.name);
@@ -97,7 +101,7 @@ public class Main {
 		System.out.println("Total Games: " + playerOne.total);
 		System.out.println("Win Streak: " + playerOne.winStreak);
 		System.out.println("");
-		System.out.println("Type Player 2’s username: ");
+		System.out.println("Type Player 2â€™s username: ");
 		String setPlayerTwo = keyb.next();
 		playerTwo.name = setPlayerTwo;
 		System.out.println("Player: " + playerTwo.name);
@@ -180,7 +184,7 @@ public class Main {
 		int letterNumber = 0;
 		int positionLength = 0;
 		if (turnCount <= 3) {
-			System.out.println("Type the position in the format “X Y” (replace X with a letter and Y with a number... eg. A 3).");
+			System.out.println("Type the position in the format â€œX Yâ€ (replace X with a letter and Y with a number... eg. A 3).");
 		}
 		do {
 			String position = keyb.next();
