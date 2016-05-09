@@ -4,14 +4,18 @@
  * Last Updated: May 5, 2016
  */
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Scanner;
 
 public class Main {
 
+	static Player player;
+	static String FILENAME = player + ".save";
 	static Scanner keyb = new Scanner(System.in);
 
-	static Player playerOne = new Player();
-	static Player playerTwo = new Player();
 	static char[][] gameBoard = null;
 	static boolean playerTurn = true;
 	static final int BOARDSIZE = 15;
@@ -19,7 +23,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		// Prints the introduction of the game
-		printIntro(); 
+		// printIntro(); 
 		boolean restartGame = false; // Variable that restarts the game or not
 		do {
 			// Output player stats and show the board
@@ -34,26 +38,10 @@ public class Main {
 			if (!isGameTied()) {
 				if (!playerTurn) { // Prints and update status if Player One won.
 					System.out.println("Player 1 Wins");
-					playerOne.win++;
-					playerOne.total++;
-					playerOne.winStreak++;
-					playerTwo.loss++;
-					playerTwo.winStreak = 0;
-					playerTwo.total++;
 				} else if (playerTurn) { // Prints and update status if Player One won.
 					System.out.println("Player 2 Wins");
-					playerTwo.win++;
-					playerTwo.total++;
-					playerTwo.winStreak++;
-					playerOne.loss++;
-					playerOne.winStreak = 0;
-					playerOne.total++;
 				}
 				System.out.println("The game is a tie!");
-				playerOne.total++;
-				playerOne.winStreak = 0;
-				playerTwo.total++;
-				playerTwo.winStreak = 0;
 			}
 			System.out.println("(P)lay Again");
 			System.out.println("(Q)uit");
@@ -94,23 +82,9 @@ public class Main {
 	public static void printPlayerStat() {
 		System.out.println("Type Player 1’s username: ");
 		String setPlayerOne = keyb.next();
-		playerOne.name = setPlayerOne;
-		System.out.println("Player: " + playerOne.name);
-		System.out.println("Wins: " + playerOne.win);
-		System.out.println("Loss: " + playerOne.loss);
-		System.out.println("Total Games: " + playerOne.total);
-		System.out.println("Win Streak: " + playerOne.winStreak);
-		System.out.println("");
-		System.out.println("Type Player 2’s username: ");
-		String setPlayerTwo = keyb.next();
-		playerTwo.name = setPlayerTwo;
-		System.out.println("Player: " + playerTwo.name);
-		System.out.println("Wins: " + playerTwo.win);
-		System.out.println("Loss: " + playerTwo.loss);
-		System.out.println("Total Games: " + playerOne.total);
-		System.out.println("Win Streak: " + playerOne.winStreak);
-		System.out.println("");
-		System.out.println("(P)lay");
+		player.name = setPlayerOne;
+		loadPlayerData();
+		player.run();
 		startGame();
 	}
 
@@ -289,7 +263,7 @@ public class Main {
 				}
 			}
 		}
-		// Check top-right to bottom-left.
+		/*// Check top-right to bottom-left.
 		for (int col = 4; col <= gameBoard.length - 5; col++) { // loop through the row
 			for (int row = 4; row <= gameBoard.length - 5; row++) { // loop through the column
 				char letter = gameBoard[col][row]; // Assign the character chosen to letter
@@ -324,7 +298,7 @@ public class Main {
 					}
 				}
 			}
-		}
+		}*/
 		return false;
 	}
 	
@@ -337,5 +311,60 @@ public class Main {
 			}
 		}
 		return false;
+	}
+	
+	public static void loadPlayerData() {
+		System.out.println("Loading Data...");
+		FileInputStream streamIn = null;
+		ObjectInputStream objectinputstream = null;
+		try {
+			streamIn = new FileInputStream(FILENAME);
+			objectinputstream = new ObjectInputStream(streamIn);
+			// Since the game object contains references
+			// to all the other objects, reading it in
+			// also reads in all the other objects!
+			player = (Player) objectinputstream.readObject();
+			if (player == null) {
+				System.out.println("No player found, Creating new player.");
+				player = new Player();
+			} else {
+				System.out.println("Loaded! Welcome back " + player.name + "!");
+			}
+		} catch (Exception e) {
+			System.out.println("No player found, Creating new player.");
+			player = new Player();
+		} finally {
+			try {
+				objectinputstream.close();
+			} catch (Exception e) {
+				System.out.println("ERROR: " + e.getMessage());
+			}
+		}
+	}
+	
+	/**
+	 * Save the user's game to the save game file
+	 */
+	public static void savePlayerData() {
+		System.out.print("Saving player...");
+		FileOutputStream fout;
+		ObjectOutputStream oos = null;
+		try {
+			fout = new FileOutputStream(FILENAME);
+			oos = new ObjectOutputStream(fout);
+			// Since the game object contains references
+			// to all the other objects, writing it
+			// also writes all the other objects!
+			
+			oos.writeObject(player);
+			System.out.println("Saved!");
+		} catch (Exception e) {
+			System.out.println("ERROR: " + e.getMessage());
+		}
+		try {
+			oos.close();
+		} catch (Exception e) {
+			System.out.println("ERROR: " + e.getMessage());
+		}
 	}
 }
