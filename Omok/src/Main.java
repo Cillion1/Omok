@@ -1,7 +1,7 @@
 /**
  * Description: This class runs our game
  * Author: Dennis Situ
- * Last Updated: May 5, 2016
+ * Last Updated: May 10, 2016
  */
 
 import java.io.FileInputStream;
@@ -13,7 +13,7 @@ import java.util.Scanner;
 public class Main {
 
 	static Player player;
-	static String FILENAME = player + ".save";
+	static String fileName = "";
 	static Scanner keyb = new Scanner(System.in);
 
 	static char[][] gameBoard = null;
@@ -80,12 +80,9 @@ public class Main {
 	 * This prints out the players record from the Player class
 	 */
 	public static void printPlayerStat() {
-		System.out.println("Type Player 1’s username: ");
-		String setPlayerOne = keyb.next();
-		player.name = setPlayerOne;
 		loadPlayerData();
 		player.run();
-		startGame();
+		savePlayerData();
 	}
 
 	/**
@@ -318,7 +315,10 @@ public class Main {
 		FileInputStream streamIn = null;
 		ObjectInputStream objectinputstream = null;
 		try {
-			streamIn = new FileInputStream(FILENAME);
+			System.out.println("Username: ");
+			String userOpen = keyb.next();
+			fileName = userOpen;
+			streamIn = new FileInputStream(fileName);
 			objectinputstream = new ObjectInputStream(streamIn);
 			// Since the game object contains references
 			// to all the other objects, reading it in
@@ -333,6 +333,7 @@ public class Main {
 		} catch (Exception e) {
 			System.out.println("No player found, Creating new player.");
 			player = new Player();
+			
 		} finally {
 			try {
 				objectinputstream.close();
@@ -346,16 +347,16 @@ public class Main {
 	 * Save the user's game to the save game file
 	 */
 	public static void savePlayerData() {
-		System.out.print("Saving player...");
+		System.out.println("Saving player...");
 		FileOutputStream fout;
 		ObjectOutputStream oos = null;
 		try {
-			fout = new FileOutputStream(FILENAME);
+			// Ask user for filename save
+			fout = new FileOutputStream(fileName);
 			oos = new ObjectOutputStream(fout);
 			// Since the game object contains references
 			// to all the other objects, writing it
 			// also writes all the other objects!
-			
 			oos.writeObject(player);
 			System.out.println("Saved!");
 		} catch (Exception e) {
