@@ -31,9 +31,9 @@ public class Main {
 			do {
 				placePiece();
 				printBoard(gameBoard);
-			} while (!isGameWon() || !isGameTied());
+			} while (!isGameWon());
 			
-			if (isGameTied()) {
+			if (!isGameTied()) {
 				System.out.println("The game is a tie!");
 			} else {
 				if (!playerTurn) { // Prints and update status if Player One won.
@@ -41,19 +41,27 @@ public class Main {
 					playerOne.win++;
 					playerOne.total++;
 					playerOne.winStreak++;
+					fileName = playerOne.name;
+					savePlayerOneData();
 					
 					playerTwo.loss++;
 					playerTwo.total++;
 					playerTwo.winStreak = 0;
+					fileName = playerTwo.name;
+					savePlayerTwoData();
 				} else if (playerTurn) { // Prints and update status if Player One won.
 					System.out.println("Player 2 Wins");
 					playerTwo.win++;
 					playerTwo.total++;
 					playerTwo.winStreak++;
+					fileName = playerTwo.name;
+					savePlayerTwoData();
 					
 					playerOne.loss++;
 					playerOne.total++;
 					playerOne.winStreak = 0;
+					fileName = playerOne.name;
+					savePlayerTwoData();
 				}
 			}
 			System.out.println("(P)lay Again");
@@ -93,8 +101,13 @@ public class Main {
 	 * This prints out the players record from the Player class
 	 */
 	public static void printPlayerStat() {
-		loadPlayerData();
-		savePlayerData();
+		loadPlayerOneData();
+		savePlayerOneData();
+		System.out.println("");
+		loadPlayerTwoData();
+		savePlayerOneData();
+		savePlayerTwoData();
+		System.out.println("");
 	}
 
 	/**
@@ -332,16 +345,15 @@ public class Main {
 	/**
 	 * This loads the users file if it is there and creates a new one if it does not.
 	 */
-	public static void loadPlayerData() {
+	public static void loadPlayerOneData() {
 		System.out.println("Loading Data...");
 		FileInputStream streamIn = null;
 		ObjectInputStream objectinputstream = null;
+		System.out.println("Player 1's Name: ");
+		String userName = keyb.next();
+		// Assign their name as the filename
+		fileName = userName;
 		try {
-			// Assign their name as the filename
-			System.out.println("Player 1's Name: ");
-			String userName = keyb.next();
-			playerOne.name.equals(userName);
-			fileName = userName;
 			streamIn = new FileInputStream(fileName);
 			objectinputstream = new ObjectInputStream(streamIn);
 			// Reads the file from the player
@@ -350,27 +362,33 @@ public class Main {
 			if (playerOne == null) {
 				System.out.println("No player found, Creating new player.");
 				playerOne = new Player();
+				playerOne.name = userName;
 			} else {
 				System.out.println("Loaded! Welcome back " + playerOne.name + "!");
 			}
 		} catch (Exception e) {
 			System.out.println("No player found, Creating new player.");
 			playerOne = new Player();
+			playerOne.name = userName;
 		} finally {
 			try {
 				objectinputstream.close();
 			} catch (Exception e) {
 				System.out.println("ERROR: " + e.getMessage());
 			}
-			run();
 		}
+		runP1();
+	}
 		
+	public static void loadPlayerTwoData() {
+		System.out.println("Loading Data...");
+		FileInputStream streamIn = null;
+		ObjectInputStream objectinputstream = null;
+		System.out.println("Player 2's Name: ");
+		String userName = keyb.next();
+		// Assign their name as the filename
+		fileName = userName;
 		try {
-			// Assign their name as the filename
-			System.out.println("Player 2's Name: ");
-			String userName = keyb.next();
-			playerTwo.name.equals(userName);
-			fileName = userName;
 			streamIn = new FileInputStream(fileName);
 			objectinputstream = new ObjectInputStream(streamIn);
 			// Reads the file from the player
@@ -379,12 +397,14 @@ public class Main {
 			if (playerTwo == null) {
 				System.out.println("No player found, Creating new player.");
 				playerTwo = new Player();
+				playerTwo.name = userName;
 			} else {
-				System.out.println("Loaded! Welcome back " + playerOne.name + "!");
+				System.out.println("Loaded! Welcome back " + playerTwo.name + "!");
 			}
 		} catch (Exception e) {
 			System.out.println("No player found, Creating new player.");
 			playerTwo = new Player();
+			playerTwo.name = userName;
 		} finally {
 			try {
 				objectinputstream.close();
@@ -392,13 +412,13 @@ public class Main {
 				System.out.println("ERROR: " + e.getMessage());
 			}
 		}
-		run();
+		runP2();
 	}
 	
 	/**
 	 * This save the user's statistics to the file assign.
 	 */
-	public static void savePlayerData() {
+	public static void savePlayerOneData() {
 		System.out.println("Saving player...");
 		FileOutputStream fout;
 		ObjectOutputStream oos = null;
@@ -419,11 +439,40 @@ public class Main {
 		}
 	}
 	
-	public static void run() {
+	public static void savePlayerTwoData() {
+		System.out.println("Saving player...");
+		FileOutputStream fout;
+		ObjectOutputStream oos = null;
+		try {
+			// Creates the file from file name
+			fout = new FileOutputStream(fileName);
+			oos = new ObjectOutputStream(fout);
+			// Writes the data to the file
+			oos.writeObject(playerTwo);
+			System.out.println("Saved!");
+		} catch (Exception e) {
+			System.out.println("ERROR: " + e.getMessage());
+		}
+		try {
+			oos.close();
+		} catch (Exception e) {
+			System.out.println("ERROR: " + e.getMessage());
+		}
+	}
+	
+	public static void runP1() {
 		System.out.println("Player: " + playerOne.name);
 		System.out.println("Wins: " + playerOne.win);
 		System.out.println("Loss " + playerOne.loss);
 		System.out.println("Total Games: " + playerOne.total);
 		System.out.println("Win Streak " + playerOne.winStreak);
+	}
+	
+	public static void runP2() {
+		System.out.println("Player: " + playerTwo.name);
+		System.out.println("Wins: " + playerTwo.win);
+		System.out.println("Loss " + playerTwo.loss);
+		System.out.println("Total Games: " + playerTwo.total);
+		System.out.println("Win Streak " + playerTwo.winStreak);
 	}
 }
