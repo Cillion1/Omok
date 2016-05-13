@@ -23,7 +23,7 @@ public class Main {
 	static int turnCount = 0;
 
 	public static void main(String[] args) {
-		printIntro();
+		// printIntro();
 		runGame();
 	}
 	
@@ -33,12 +33,12 @@ public class Main {
 	public static void runGame() {
 		boolean restartGame = false;
 		do {
-			printPlayerStat();
+			// printPlayerStat();
 			setupBoard();
 			do {
 				placePiece();
 				printBoard(gameBoard);
-			} while (!isGameWon());
+			} while (!isGameWon() || !isGameTied());
 
 			if (!isGameTied()) {
 				System.out.println("The game is a tie!");
@@ -209,11 +209,11 @@ public class Main {
 			positionLength = position.length();
 			char c = position.toLowerCase().charAt(0);
 			letterNumber = c - 'a';
-			if (letterNumber > BOARDSIZE || letterNumber < 0
+			if (letterNumber > BOARDSIZE - 1 || letterNumber < 0
 					|| positionLength > 1) {
 				System.out.println("Invalid Move! Must be a letter before P.");
 			}
-		} while (letterNumber > BOARDSIZE || letterNumber < 0
+		} while (letterNumber > BOARDSIZE - 1 || letterNumber < 0
 				|| positionLength > 1);
 		return letterNumber;
 	}
@@ -357,6 +357,7 @@ public class Main {
 	 * @return boolean true if the game is tied. False if game is not tied.
 	 */
 	public static boolean isGameTied() {
+		// Need to check every index
 		for (int col = 0; col < gameBoard.length; col++) {
 			for (int row = 0; row < gameBoard.length; row++) {
 				if (gameBoard[col][row] != '-') {
