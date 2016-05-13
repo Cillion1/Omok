@@ -354,18 +354,18 @@ public class Main {
 	/**
 	 * Checks to see if there are no more possible placements on the board.
 	 * 
-	 * @return boolean true if the game is tied. False if game is not tied.
+	 * @return boolean false if the game is tied. True if game is not tied.
 	 */
 	public static boolean isGameTied() {
 		// Need to check every index
 		for (int col = 0; col < gameBoard.length; col++) {
 			for (int row = 0; row < gameBoard.length; row++) {
-				if (gameBoard[col][row] != '-') {
-					return true;
+				if (gameBoard[col][row] == '-') {
+					return false;
 				}
 			}
 		}
-		return false;
+		return true;
 	}
 
 	/**
