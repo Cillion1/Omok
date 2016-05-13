@@ -1,4 +1,3 @@
-
 /**
  * Description: This class runs our game
  * Author: Dennis Situ
@@ -24,10 +23,17 @@ public class Main {
 	static int turnCount = 0;
 
 	public static void main(String[] args) {
-		// printIntro();
+		printIntro();
+		runGame();
+	}
+	
+	/**
+	 * This runs the game and restarts the game when it is done.
+	 */
+	public static void runGame() {
 		boolean restartGame = false;
 		do {
-			// printPlayerStat();
+			printPlayerStat();
 			setupBoard();
 			do {
 				placePiece();
@@ -37,36 +43,9 @@ public class Main {
 			if (!isGameTied()) {
 				System.out.println("The game is a tie!");
 			} else {
-				if (!playerTurn) { // Prints and update status if Player One
-									// won.
-					System.out.println("Player 1 Wins");
-					playerOne.win++;
-					playerOne.total++;
-					playerOne.winStreak++;
-					fileName = playerOne.name;
-					savePlayerOneData();
-
-					playerTwo.loss++;
-					playerTwo.total++;
-					playerTwo.winStreak = 0;
-					fileName = playerTwo.name;
-					savePlayerTwoData();
-				} else if (playerTurn) { // Prints and update status if Player
-											// One won.
-					System.out.println("Player 2 Wins");
-					playerTwo.win++;
-					playerTwo.total++;
-					playerTwo.winStreak++;
-					fileName = playerTwo.name;
-					savePlayerTwoData();
-
-					playerOne.loss++;
-					playerOne.total++;
-					playerOne.winStreak = 0;
-					fileName = playerOne.name;
-					savePlayerOneData();
-				}
+				updatePlayerStats();
 			}
+			System.out.println("");
 			System.out.println("(P)lay Again");
 			System.out.println("(Q)uit");
 			boolean quitGame = false;
@@ -84,6 +63,38 @@ public class Main {
 			playerTurn = true;
 		} while (restartGame);
 	}
+	/**
+	 * This updates the player stats after the game is finished.
+	 */
+	public static void updatePlayerStats() {
+		if (!playerTurn) {
+			System.out.println("Player 1 Wins");
+			playerOne.win++;
+			playerOne.total++;
+			playerOne.winStreak++;
+			fileName = playerOne.name;
+			savePlayerOneData();
+
+			playerTwo.loss++;
+			playerTwo.total++;
+			playerTwo.winStreak = 0;
+			fileName = playerTwo.name;
+			savePlayerTwoData();
+		} else if (playerTurn) { // Prints and update status if Player one won.
+			System.out.println("Player 2 Wins");
+			playerTwo.win++;
+			playerTwo.total++;
+			playerTwo.winStreak++;
+			fileName = playerTwo.name;
+			savePlayerTwoData();
+
+			playerOne.loss++;
+			playerOne.total++;
+			playerOne.winStreak = 0;
+			fileName = playerOne.name;
+			savePlayerOneData();
+		}
+	}
 
 	/**
 	 * Get input from the user and check to see if the letter assigned is
@@ -96,7 +107,8 @@ public class Main {
 			if (numberStart.equalsIgnoreCase("p")) {
 				gameStart = true;
 			} else {
-				System.out.println("Invalid Command. Please type the correct letter to continue.");
+				System.out
+						.println("Invalid Command. Please type the correct letter to continue.");
 			}
 		} while (!gameStart);
 	}
@@ -122,8 +134,9 @@ public class Main {
 		System.out.println("");
 		System.out.println("Instructions:");
 		System.out.println("");
-		System.out.println("To play omok, each player takes turn to place pieces on the board. "
-				+ "Getting 5 pieces in a line either vertically, horizontally, or diagonally will achieve a win.");
+		System.out
+				.println("To play omok, each player takes turn to place pieces on the board. "
+						+ "Getting 5 pieces in a line either vertically, horizontally, or diagonally will achieve a win.");
 		System.out.println("");
 		System.out.println("(P)lay");
 		System.out.println("");
@@ -151,8 +164,7 @@ public class Main {
 	/**
 	 * Prints the board out and switch players each input
 	 * 
-	 * @param char[][]
-	 *            The array holding the board
+	 * @param char[][] The array holding the board
 	 */
 	public static void printBoard(char[][] data) {
 		System.out.println("A B C D E F G H I J K L M N O");
@@ -189,18 +201,20 @@ public class Main {
 		int letterNumber = 0;
 		int positionLength = 0;
 		if (turnCount <= 3) {
-			System.out.println(
-					"Type the position in the format “X Y” (replace X with a letter and Y with a number... eg. A 3).");
+			System.out
+					.println("Type the position in the format “X Y” (replace X with a letter and Y with a number... eg. A 3).");
 		}
 		do {
 			String position = keyb.next();
 			positionLength = position.length();
 			char c = position.toLowerCase().charAt(0);
 			letterNumber = c - 'a';
-			if (letterNumber > BOARDSIZE || letterNumber < 0 || positionLength > 1) {
+			if (letterNumber > BOARDSIZE || letterNumber < 0
+					|| positionLength > 1) {
 				System.out.println("Invalid Move! Must be a letter before P.");
 			}
-		} while (letterNumber > BOARDSIZE || letterNumber < 0 || positionLength > 1);
+		} while (letterNumber > BOARDSIZE || letterNumber < 0
+				|| positionLength > 1);
 		return letterNumber;
 	}
 
@@ -216,7 +230,9 @@ public class Main {
 				String position = keyb.next();
 				number = Integer.parseInt(position);
 				if (number <= 0 || number > BOARDSIZE) {
-					System.out.println("Invalid Move! Must be a positive number less than " + BOARDSIZE + ".");
+					System.out
+							.println("Invalid Move! Must be a positive number less than "
+									+ BOARDSIZE + ".");
 				}
 			} catch (Exception e) {
 				System.out.println("Invalid Move! Not a possible coordinate.");
@@ -242,7 +258,7 @@ public class Main {
 					playerTurn = false;
 					positionNotTaken = true;
 				} else {
-					gameBoard[y][x] = 'X'; // Change to O later
+					gameBoard[y][x] = 'O'; // Change to O later
 					playerTurn = true;
 					positionNotTaken = true;
 				}
@@ -352,15 +368,15 @@ public class Main {
 	}
 
 	/**
-	 * This loads the users file if it is there and creates a new one if it does
+	 * This loads player 1's file if it is there and creates a new one if it does
 	 * not.
 	 */
 	public static void loadPlayerOneData() {
-		System.out.println("Loading Data...");
 		FileInputStream streamIn = null;
 		ObjectInputStream objectinputstream = null;
 		System.out.println("Player 1's Name: ");
 		String userName = keyb.next();
+		System.out.println("Loading Data...");
 		// Assign their name as the filename
 		fileName = userName;
 		try {
@@ -375,7 +391,7 @@ public class Main {
 				playerOne = new Player();
 				playerOne.name = userName;
 			} else {
-				System.out.println("Loaded! Welcome back " + playerOne.name + "!");
+				System.out.println("Loaded!");
 			}
 		} catch (Exception e) {
 			System.out.println("No player found, Creating new player.");
@@ -391,12 +407,16 @@ public class Main {
 		runP1();
 	}
 
+	/**
+	 * This loads player 2's file if it is there and creates a new one if it does
+	 * not.
+	 */
 	public static void loadPlayerTwoData() {
-		System.out.println("Loading Data...");
 		FileInputStream streamIn = null;
 		ObjectInputStream objectinputstream = null;
 		System.out.println("Player 2's Name: ");
 		String userName = keyb.next();
+		System.out.println("Loading Data...");
 		// Assign their name as the filename
 		fileName = userName;
 		try {
@@ -411,7 +431,7 @@ public class Main {
 				playerTwo = new Player();
 				playerTwo.name = userName;
 			} else {
-				System.out.println("Loaded! Welcome back " + playerTwo.name + "!");
+				System.out.println("Loaded!");
 			}
 		} catch (Exception e) {
 			System.out.println("No player found, Creating new player.");
@@ -428,7 +448,7 @@ public class Main {
 	}
 
 	/**
-	 * This save the user's statistics to the file assign.
+	 * This save player 1's stats to the file assign.
 	 */
 	public static void savePlayerOneData() {
 		FileOutputStream fout;
@@ -468,6 +488,9 @@ public class Main {
 		}
 	}
 
+	/**
+	 * This prints out the stats for player 1
+	 */
 	public static void runP1() {
 		System.out.println("Player: " + playerOne.name);
 		System.out.println("Wins: " + playerOne.win);
@@ -476,6 +499,9 @@ public class Main {
 		System.out.println("Win Streak " + playerOne.winStreak);
 	}
 
+	/**
+	 * This prints out the stats for player 2
+	 */
 	public static void runP2() {
 		System.out.println("Player: " + playerTwo.name);
 		System.out.println("Wins: " + playerTwo.win);
