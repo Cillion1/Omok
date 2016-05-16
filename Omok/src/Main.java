@@ -33,7 +33,7 @@ public class Main {
 	public static void runGame() {
 		boolean restartGame = false;
 		do {
-			// printPlayerStat();
+			printPlayerStat();
 			setupBoard();
 			do {
 				placePiece();
@@ -42,6 +42,7 @@ public class Main {
 
 			if (!isGameTied()) {
 				System.out.println("The game is a tie!");
+				updatePlayerStats();
 			} else {
 				updatePlayerStats();
 			}
@@ -63,6 +64,7 @@ public class Main {
 			playerTurn = true;
 		} while (restartGame);
 	}
+	
 	/**
 	 * This updates the player stats after the game is finished.
 	 */
@@ -93,6 +95,16 @@ public class Main {
 			playerOne.winStreak = 0;
 			fileName = playerOne.name;
 			savePlayerOneData();
+		} else if (isGameTied()) {
+			playerOne.total++;
+			playerOne.winStreak++;
+			fileName = playerOne.name;
+			savePlayerOneData();
+			
+			playerTwo.total++;
+			playerTwo.winStreak = 0;
+			fileName = playerTwo.name;
+			savePlayerTwoData();
 		}
 	}
 
@@ -149,13 +161,11 @@ public class Main {
 	 * board out after
 	 */
 	public static void setupBoard() {
-		gameBoard = new char[BOARDSIZE][BOARDSIZE]; // Declare new array of
-													// BOARDSIZE x BOARDSIZE
-		for (int i = 0; i < gameBoard.length; i++) { // Loop row up by one
-			for (int j = 0; j < gameBoard[i].length; j++) { // In each column,
-															// loop the column
-															// up by one
-				gameBoard[i][j] = '-'; // Insert '-' in each index
+		// Declare new array of BOARDSIZE x BOARDSIZE and inserts '-' in each index
+		gameBoard = new char[BOARDSIZE][BOARDSIZE]; 
+		for (int i = 0; i < gameBoard.length; i++) { 
+			for (int j = 0; j < gameBoard[i].length; j++) {
+				gameBoard[i][j] = '-';
 			}
 		}
 		printBoard(gameBoard); // Prints the board to the console
@@ -167,8 +177,13 @@ public class Main {
 	 * @param char[][] The array holding the board
 	 */
 	public static void printBoard(char[][] data) {
-		System.out.println("A B C D E F G H I J K L M N O");
+		System.out.println("   A B C D E F G H I J K L M N O");
 		for (int row = 0; row < data.length; row++) {
+			if (row >= 9) {
+				System.out.print(row + 1 + " ");
+			} else {
+				System.out.print(" " + (row + 1) + " ");
+			}
 			for (int col = 0; col < data[row].length; col++) {
 				System.out.print(data[row][col] + " ");
 			}
@@ -201,8 +216,7 @@ public class Main {
 		int letterNumber = 0;
 		int positionLength = 0;
 		if (turnCount <= 3) {
-			System.out
-					.println("Type the position in the format “X Y” (replace X with a letter and Y with a number... eg. A 3).");
+			System.out.println("Type the position in the format “X Y” (replace X with a letter and Y with a number... eg. A 3).");
 		}
 		do {
 			String position = keyb.next();
@@ -230,8 +244,7 @@ public class Main {
 				String position = keyb.next();
 				number = Integer.parseInt(position);
 				if (number <= 0 || number > BOARDSIZE) {
-					System.out
-							.println("Invalid Move! Must be a positive number less than "
+					System.out.println("Invalid Move! Must be a positive number less than "
 									+ BOARDSIZE + ".");
 				}
 			} catch (Exception e) {
