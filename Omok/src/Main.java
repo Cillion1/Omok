@@ -1,7 +1,7 @@
 /**
  * Description: This class runs our game
  * Author: Dennis Situ
- * Last Updated: May 10, 2016
+ * Last Updated: May 16, 2016
  */
 
 import java.io.FileInputStream;
