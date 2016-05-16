@@ -1,7 +1,7 @@
 /**
  * Description: This class runs our game
  * Author: Dennis Situ
- * Last Updated: May 16, 2016
+ * Last Updated: May 5, 2016
  */
 
 import java.io.FileInputStream;
@@ -12,9 +12,8 @@ import java.util.Scanner;
 
 public class Main {
 
-	static Player playerOne = new Player();
-	static Player playerTwo = new Player();
-	static String fileName = "";
+	static Player player;
+	static String FILENAME = player + ".save";
 	static Scanner keyb = new Scanner(System.in);
 
 	static char[][] gameBoard = null;
@@ -23,30 +22,27 @@ public class Main {
 	static int turnCount = 0;
 
 	public static void main(String[] args) {
-		// printIntro();
-		runGame();
-	}
-	
-	/**
-	 * This runs the game and restarts the game when it is done.
-	 */
-	public static void runGame() {
-		boolean restartGame = false;
+		// Prints the introduction of the game
+		// printIntro(); 
+		boolean restartGame = false; // Variable that restarts the game or not
 		do {
+			// Output player stats and show the board
 			printPlayerStat();
 			setupBoard();
+			// Play until the game is won
 			do {
 				placePiece();
 				printBoard(gameBoard);
 			} while (!isGameWon() || !isGameTied());
-
+			
 			if (!isGameTied()) {
+				if (!playerTurn) { // Prints and update status if Player One won.
+					System.out.println("Player 1 Wins");
+				} else if (playerTurn) { // Prints and update status if Player One won.
+					System.out.println("Player 2 Wins");
+				}
 				System.out.println("The game is a tie!");
-				updatePlayerStats();
-			} else {
-				updatePlayerStats();
 			}
-			System.out.println("");
 			System.out.println("(P)lay Again");
 			System.out.println("(Q)uit");
 			boolean quitGame = false;
@@ -66,61 +62,16 @@ public class Main {
 	}
 	
 	/**
-	 * This updates the player stats after the game is finished.
-	 */
-	public static void updatePlayerStats() {
-		if (!playerTurn) {
-			System.out.println("Player 1 Wins");
-			playerOne.win++;
-			playerOne.total++;
-			playerOne.winStreak++;
-			fileName = playerOne.name;
-			savePlayerOneData();
-
-			playerTwo.loss++;
-			playerTwo.total++;
-			playerTwo.winStreak = 0;
-			fileName = playerTwo.name;
-			savePlayerTwoData();
-		} else if (playerTurn) { // Prints and update status if Player one won.
-			System.out.println("Player 2 Wins");
-			playerTwo.win++;
-			playerTwo.total++;
-			playerTwo.winStreak++;
-			fileName = playerTwo.name;
-			savePlayerTwoData();
-
-			playerOne.loss++;
-			playerOne.total++;
-			playerOne.winStreak = 0;
-			fileName = playerOne.name;
-			savePlayerOneData();
-		} else if (isGameTied()) {
-			playerOne.total++;
-			playerOne.winStreak++;
-			fileName = playerOne.name;
-			savePlayerOneData();
-			
-			playerTwo.total++;
-			playerTwo.winStreak = 0;
-			fileName = playerTwo.name;
-			savePlayerTwoData();
-		}
-	}
-
-	/**
-	 * Get input from the user and check to see if the letter assigned is
-	 * inputed
+	 * Get input from the user and check to see if the letter assigned is inputed
 	 */
 	public static void startGame() {
 		boolean gameStart = false;
 		do {
 			String numberStart = keyb.next();
-			if (numberStart.equalsIgnoreCase("p")) {
+			if (numberStart.equalsIgnoreCase("p")) { // Checks to see if 'p' is the input
 				gameStart = true;
 			} else {
-				System.out
-						.println("Invalid Command. Please type the correct letter to continue.");
+				System.out.println("Invalid Command. Please type the correct letter to continue."); // Prints out if input was anything but 'p'.
 			}
 		} while (!gameStart);
 	}
@@ -129,13 +80,12 @@ public class Main {
 	 * This prints out the players record from the Player class
 	 */
 	public static void printPlayerStat() {
-		loadPlayerOneData();
-		savePlayerOneData();
-		System.out.println("");
-		loadPlayerTwoData();
-		savePlayerOneData();
-		savePlayerTwoData();
-		System.out.println("");
+		System.out.println("Type Player 1’s username: ");
+		String setPlayerOne = keyb.next();
+		player.name = setPlayerOne;
+		loadPlayerData();
+		player.run();
+		startGame();
 	}
 
 	/**
@@ -157,15 +107,14 @@ public class Main {
 	}
 
 	/**
-	 * Creates a new array and inserts '-' to all the indexes and prints the
-	 * board out after
+	 * Creates a new array and inserts '-' to all the indexes
+	 * and prints the board out after
 	 */
 	public static void setupBoard() {
-		// Declare new array of BOARDSIZE x BOARDSIZE and inserts '-' in each index
-		gameBoard = new char[BOARDSIZE][BOARDSIZE]; 
-		for (int i = 0; i < gameBoard.length; i++) { 
-			for (int j = 0; j < gameBoard[i].length; j++) {
-				gameBoard[i][j] = '-';
+		gameBoard = new char[BOARDSIZE][BOARDSIZE]; // Declare new array of BOARDSIZE x BOARDSIZE
+		for (int i = 0; i < gameBoard.length; i++) { // Loop row up by one
+			for (int j = 0; j < gameBoard[i].length; j++) { // In each column, loop the column up by one
+				gameBoard[i][j] = '-'; // Insert '-' in each index
 			}
 		}
 		printBoard(gameBoard); // Prints the board to the console
@@ -173,30 +122,24 @@ public class Main {
 
 	/**
 	 * Prints the board out and switch players each input
-	 * 
-	 * @param char[][] The array holding the board
+	 * @param data
 	 */
 	public static void printBoard(char[][] data) {
-		System.out.println("   A B C D E F G H I J K L M N O");
+		System.out.println("A B C D E F G H I J K L M N O");
 		for (int row = 0; row < data.length; row++) {
-			if (row >= 9) {
-				System.out.print(row + 1 + " ");
-			} else {
-				System.out.print(" " + (row + 1) + " ");
-			}
 			for (int col = 0; col < data[row].length; col++) {
 				System.out.print(data[row][col] + " ");
 			}
 			System.out.println();
 		}
 		System.out.println("");
-		switchPlayer();
+		isWhoTurn();
 	}
-
+	
 	/**
 	 * Switch from player one to two and vice versa
 	 */
-	public static void switchPlayer() {
+	public static void isWhoTurn() {
 		if (!isGameWon()) {
 			if (playerTurn) {
 				System.out.println("Player " + 1 + "'s Turn");
@@ -206,11 +149,10 @@ public class Main {
 			}
 		}
 	}
-
+	
 	/**
 	 * Grabs a letter and return the letter as a integer
-	 * 
-	 * @return int Column number
+	 * @return
 	 */
 	public static int getLetterPosition() {
 		int letterNumber = 0;
@@ -223,19 +165,18 @@ public class Main {
 			positionLength = position.length();
 			char c = position.toLowerCase().charAt(0);
 			letterNumber = c - 'a';
-			if (letterNumber > BOARDSIZE - 1 || letterNumber < 0
+			if (letterNumber > BOARDSIZE || letterNumber < 0
 					|| positionLength > 1) {
 				System.out.println("Invalid Move! Must be a letter before P.");
 			}
-		} while (letterNumber > BOARDSIZE - 1 || letterNumber < 0
+		} while (letterNumber > BOARDSIZE || letterNumber < 0
 				|| positionLength > 1);
 		return letterNumber;
 	}
 
 	/**
 	 * Grabs an integer and returns it
-	 * 
-	 * @return int
+	 * @return
 	 */
 	public static int getNumberPosition() {
 		int number = 0;
@@ -244,8 +185,7 @@ public class Main {
 				String position = keyb.next();
 				number = Integer.parseInt(position);
 				if (number <= 0 || number > BOARDSIZE) {
-					System.out.println("Invalid Move! Must be a positive number less than "
-									+ BOARDSIZE + ".");
+					System.out.println("Invalid Move! Must be a positive number less than " + BOARDSIZE + ".");
 				}
 			} catch (Exception e) {
 				System.out.println("Invalid Move! Not a possible coordinate.");
@@ -264,14 +204,13 @@ public class Main {
 			int x = getLetterPosition();
 			int y = getNumberPosition() - 1;
 			// Check on if player has already played in position
-			System.out.println(gameBoard[y][x]);
 			if (gameBoard[y][x] == '-') {
 				if (playerTurn) {
 					gameBoard[y][x] = 'X';
 					playerTurn = false;
 					positionNotTaken = true;
 				} else {
-					gameBoard[y][x] = 'O'; // Change to O later
+					gameBoard[y][x] = 'X'; // Change to O later
 					playerTurn = true;
 					positionNotTaken = true;
 				}
@@ -283,20 +222,19 @@ public class Main {
 	}
 
 	/**
-	 * Checks if 5 X's or 5 O's are on the board and if the game is won.
-	 * 
-	 * @return boolean true if there is a win. False if there is no win
+	 * Checks if 5 X's or 5 O's are on the board
+	 * and if the game is won.
+	 * @return true;
 	 */
 	public static boolean isGameWon() {
 		// Determine horizontal 5 in a row.
-		for (int col = 0; col <= gameBoard.length - 1; col++) {
-			for (int row = 0; row <= gameBoard.length - 5; row++) {
-				// Assign X or O in letter.
-				char letter = gameBoard[col][row];
-				if (gameBoard[col][row] != '-') {
+		for (int col = 0; col <= gameBoard.length - 1; col++) { 	// loop through the column
+			for (int row = 0; row <= gameBoard.length - 5; row++) { // loop through the row
+				char letter = gameBoard[col][row]; 					// Assign the character chosen to letter
+				if (gameBoard[col][row] != '-') { 					// Check to see if index is X or O
 					boolean isWin = true;
-					for (int i = 1; i < 5; i++) {
-						if (gameBoard[col][row + i] != letter) {
+					for (int i = 1; i < 5; i++) { 					// Counter up to 5
+						if (gameBoard[col][row + i] != letter) { 	// Checks if next index equals letter assigned
 							isWin = false; //
 							break;
 						}
@@ -308,13 +246,13 @@ public class Main {
 			}
 		}
 		// Determine vertically 5 in a row.
-		for (int col = 0; col <= gameBoard.length - 5; col++) {
-			for (int row = 0; row <= gameBoard.length - 1; row++) {
-				char letter = gameBoard[col][row];
-				if (gameBoard[col][row] != '-') {
+		for (int col = 0; col <= gameBoard.length - 5 ; col++) { // loop through the column
+			for (int row = 0; row <= gameBoard.length - 1; row++) { // loop through the row
+				char letter = gameBoard[col][row]; // Assign the character chosen to letter
+				if (gameBoard[col][row] != '-') { // Check to see if index is X or O
 					boolean isWin = true;
-					for (int i = 1; i < 5; i++) {
-						if (gameBoard[col + i][row] != letter) {
+					for (int i = 1; i < 5; i++) { // Counter up to 5
+						if (gameBoard[col + i][row] != letter) { // Checks if next index equals letter assigned
 							isWin = false;
 							break;
 						}
@@ -325,14 +263,14 @@ public class Main {
 				}
 			}
 		}
-		// Determine top-right to bottom-left (Works)
-		for (int col = 0; col <= gameBoard.length - 5; col++) {
-			for (int row = 4; row <= gameBoard.length - 1; row++) {
-				char letter = gameBoard[col][row];
-				if (gameBoard[col][row] != '-') {
+		/*// Check top-right to bottom-left.
+		for (int col = 4; col <= gameBoard.length - 5; col++) { // loop through the row
+			for (int row = 4; row <= gameBoard.length - 5; row++) { // loop through the column
+				char letter = gameBoard[col][row]; // Assign the character chosen to letter
+				if (gameBoard[col][row] != '-') { // Check to see if index is X or O
 					boolean isWin = true;
-					for (int i = 1; i < 5; i++) {
-						if (gameBoard[col + i][row - i] != letter) {
+					for (int i = 1; i < 5; i++) { // Counter up to 5
+						if (gameBoard[col - i][row - i] != letter)  { // Checks if next index equals letter assigned
 							isWin = false;
 							break;
 						}
@@ -343,14 +281,14 @@ public class Main {
 				}
 			}
 		}
-		// Determine top-left to bottom-right (\)
-		for (int col = 0; col <= gameBoard.length - 5; col++) {
-			for (int row = 0; row <= gameBoard.length - 5; row++) {
-				char letter = gameBoard[col][row];
-				if (gameBoard[col][row] != '-') {
+		// Check top-left to bottom-right
+		for (int col = 4; col <= gameBoard.length - 5; col++) { // loop through the row
+			for (int row = 4; row <= gameBoard.length - 5; row++) { // loop through the column
+				char letter = gameBoard[col][row]; // Assign the character chosen to letter
+				if (gameBoard[col][row] != '-') { // Check to see if index is X or O
 					boolean isWin = true;
-					for (int i = 1; i < 5; i++) {
-						if (gameBoard[col + i][row + i] != letter) {
+					for (int i = 1; i < 5; i++) { // Counter up to 5
+						if (gameBoard[col - i][row + i] != letter)  { // Checks if next index equals letter assigned
 							isWin = false;
 							break;
 						}
@@ -358,59 +296,43 @@ public class Main {
 					if (isWin) {
 						return true;
 					}
+				}
+			}
+		}*/
+		return false;
+	}
+	
+	public static boolean isGameTied() {
+		for (int col = 0; col < gameBoard.length; col++) {
+			for (int row = 0; row < gameBoard.length; row++) {				
+				if (gameBoard[col][row] != '-') {
+					return true;
 				}
 			}
 		}
 		return false;
 	}
-
-	/**
-	 * Checks to see if there are no more possible placements on the board.
-	 * 
-	 * @return boolean false if the game is tied. True if game is not tied.
-	 */
-	public static boolean isGameTied() {
-		// Need to check every index
-		for (int col = 0; col < gameBoard.length; col++) {
-			for (int row = 0; row < gameBoard.length; row++) {
-				if (gameBoard[col][row] == '-') {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * This loads player 1's file if it is there and creates a new one if it does
-	 * not.
-	 */
-	public static void loadPlayerOneData() {
+	
+	public static void loadPlayerData() {
+		System.out.println("Loading Data...");
 		FileInputStream streamIn = null;
 		ObjectInputStream objectinputstream = null;
-		System.out.println("Player 1's Name: ");
-		String userName = keyb.next();
-		System.out.println("Loading Data...");
-		// Assign their name as the filename
-		fileName = userName;
 		try {
-			streamIn = new FileInputStream(fileName);
+			streamIn = new FileInputStream(FILENAME);
 			objectinputstream = new ObjectInputStream(streamIn);
-			// Reads the file from the player
-			playerOne = (Player) objectinputstream.readObject();
-			// Checks to see if player exists or not and creates a new player if
-			// it does not exist
-			if (playerOne == null) {
+			// Since the game object contains references
+			// to all the other objects, reading it in
+			// also reads in all the other objects!
+			player = (Player) objectinputstream.readObject();
+			if (player == null) {
 				System.out.println("No player found, Creating new player.");
-				playerOne = new Player();
-				playerOne.name = userName;
+				player = new Player();
 			} else {
-				System.out.println("Loaded!");
+				System.out.println("Loaded! Welcome back " + player.name + "!");
 			}
 		} catch (Exception e) {
 			System.out.println("No player found, Creating new player.");
-			playerOne = new Player();
-			playerOne.name = userName;
+			player = new Player();
 		} finally {
 			try {
 				objectinputstream.close();
@@ -418,61 +340,24 @@ public class Main {
 				System.out.println("ERROR: " + e.getMessage());
 			}
 		}
-		runP1();
 	}
-
+	
 	/**
-	 * This loads player 2's file if it is there and creates a new one if it does
-	 * not.
+	 * Save the user's game to the save game file
 	 */
-	public static void loadPlayerTwoData() {
-		FileInputStream streamIn = null;
-		ObjectInputStream objectinputstream = null;
-		System.out.println("Player 2's Name: ");
-		String userName = keyb.next();
-		System.out.println("Loading Data...");
-		// Assign their name as the filename
-		fileName = userName;
-		try {
-			streamIn = new FileInputStream(fileName);
-			objectinputstream = new ObjectInputStream(streamIn);
-			// Reads the file from the player
-			playerTwo = (Player) objectinputstream.readObject();
-			// Checks to see if player exists or not and creates a new player if
-			// it does not exist
-			if (playerTwo == null) {
-				System.out.println("No player found, Creating new player.");
-				playerTwo = new Player();
-				playerTwo.name = userName;
-			} else {
-				System.out.println("Loaded!");
-			}
-		} catch (Exception e) {
-			System.out.println("No player found, Creating new player.");
-			playerTwo = new Player();
-			playerTwo.name = userName;
-		} finally {
-			try {
-				objectinputstream.close();
-			} catch (Exception e) {
-				System.out.println("ERROR: " + e.getMessage());
-			}
-		}
-		runP2();
-	}
-
-	/**
-	 * This save player 1's stats to the file assign.
-	 */
-	public static void savePlayerOneData() {
+	public static void savePlayerData() {
+		System.out.print("Saving player...");
 		FileOutputStream fout;
 		ObjectOutputStream oos = null;
 		try {
-			// Creates the file from file name
-			fout = new FileOutputStream(fileName);
+			fout = new FileOutputStream(FILENAME);
 			oos = new ObjectOutputStream(fout);
-			// Writes the data to the file
-			oos.writeObject(playerOne);
+			// Since the game object contains references
+			// to all the other objects, writing it
+			// also writes all the other objects!
+			
+			oos.writeObject(player);
+			System.out.println("Saved!");
 		} catch (Exception e) {
 			System.out.println("ERROR: " + e.getMessage());
 		}
@@ -481,46 +366,5 @@ public class Main {
 		} catch (Exception e) {
 			System.out.println("ERROR: " + e.getMessage());
 		}
-	}
-
-	public static void savePlayerTwoData() {
-		FileOutputStream fout;
-		ObjectOutputStream oos = null;
-		try {
-			// Creates the file from file name
-			fout = new FileOutputStream(fileName);
-			oos = new ObjectOutputStream(fout);
-			// Writes the data to the file
-			oos.writeObject(playerTwo);
-		} catch (Exception e) {
-			System.out.println("ERROR: " + e.getMessage());
-		}
-		try {
-			oos.close();
-		} catch (Exception e) {
-			System.out.println("ERROR: " + e.getMessage());
-		}
-	}
-
-	/**
-	 * This prints out the stats for player 1
-	 */
-	public static void runP1() {
-		System.out.println("Player: " + playerOne.name);
-		System.out.println("Wins: " + playerOne.win);
-		System.out.println("Loss " + playerOne.loss);
-		System.out.println("Total Games: " + playerOne.total);
-		System.out.println("Win Streak " + playerOne.winStreak);
-	}
-
-	/**
-	 * This prints out the stats for player 2
-	 */
-	public static void runP2() {
-		System.out.println("Player: " + playerTwo.name);
-		System.out.println("Wins: " + playerTwo.win);
-		System.out.println("Loss " + playerTwo.loss);
-		System.out.println("Total Games: " + playerTwo.total);
-		System.out.println("Win Streak " + playerTwo.winStreak);
 	}
 }
