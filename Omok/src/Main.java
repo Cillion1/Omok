@@ -23,14 +23,14 @@ public class Main {
 	static int turnCount = 0;
 
 	public static void main(String[] args) {
-		// printIntro();
 		runGame();
 	}
 	
 	/**
-	 * This runs the game and restarts the game when it is done.
+	 * This method runs the game and restarts or quits the game.
 	 */
 	public static void runGame() {
+		printIntro();
 		boolean restartGame = false;
 		do {
 			printPlayerStat();
@@ -38,13 +38,16 @@ public class Main {
 			do {
 				placePiece();
 				printBoard(gameBoard);
-			} while (!isGameWon() || !isGameTied());
+			} while (!isGameDone());
 
-			if (!isGameTied()) {
+			if (isGameTied()) {
 				System.out.println("The game is a tie!");
 				updatePlayerStats();
-			} else {
+			} else if (!playerTurn) {
+				System.out.println(playerOne.name + " Wins");
 				updatePlayerStats();
+			} else if (playerTurn) {
+				System.out.println(playerTwo.name + " Wins");
 			}
 			System.out.println("");
 			System.out.println("(P)lay Again");
@@ -66,11 +69,10 @@ public class Main {
 	}
 	
 	/**
-	 * This updates the player stats after the game is finished.
+	 * This updates the player stats after the game is finished and saves the players data to a file.
 	 */
 	public static void updatePlayerStats() {
 		if (!playerTurn) {
-			System.out.println("Player 1 Wins");
 			playerOne.win++;
 			playerOne.total++;
 			playerOne.winStreak++;
@@ -113,14 +115,16 @@ public class Main {
 	 * inputed
 	 */
 	public static void startGame() {
+		System.out.println("(P)lay");
+		System.out.println("");
+		System.out.println("Enter your choice: ");
 		boolean gameStart = false;
 		do {
 			String numberStart = keyb.next();
 			if (numberStart.equalsIgnoreCase("p")) {
 				gameStart = true;
 			} else {
-				System.out
-						.println("Invalid Command. Please type the correct letter to continue.");
+				System.out.println("Invalid Command. Please type the correct letter to continue.");
 			}
 		} while (!gameStart);
 	}
@@ -136,6 +140,7 @@ public class Main {
 		savePlayerOneData();
 		savePlayerTwoData();
 		System.out.println("");
+		startGame();
 	}
 
 	/**
@@ -146,13 +151,9 @@ public class Main {
 		System.out.println("");
 		System.out.println("Instructions:");
 		System.out.println("");
-		System.out
-				.println("To play omok, each player takes turn to place pieces on the board. "
+		System.out.println("To play omok, each player take turns to place pieces on the board. "
 						+ "Getting 5 pieces in a line either vertically, horizontally, or diagonally will achieve a win.");
 		System.out.println("");
-		System.out.println("(P)lay");
-		System.out.println("");
-		System.out.println("Enter your choice: ");
 		startGame();
 	}
 
@@ -168,17 +169,19 @@ public class Main {
 				gameBoard[i][j] = '-';
 			}
 		}
-		printBoard(gameBoard); // Prints the board to the console
+		// This prints the board to the console
+		printBoard(gameBoard);
 	}
 
 	/**
-	 * Prints the board out and switch players each input
+	 * Prints the board out and switch the player on every input
 	 * 
 	 * @param char[][] The array holding the board
 	 */
 	public static void printBoard(char[][] data) {
 		System.out.println("   A B C D E F G H I J K L M N O");
 		for (int row = 0; row < data.length; row++) {
+			// Prints out the numbers on the side
 			if (row >= 9) {
 				System.out.print(row + 1 + " ");
 			} else {
@@ -199,10 +202,10 @@ public class Main {
 	public static void switchPlayer() {
 		if (!isGameWon()) {
 			if (playerTurn) {
-				System.out.println("Player " + 1 + "'s Turn");
+				System.out.println(playerOne.name + " Turn");
 				turnCount++;
 			} else {
-				System.out.println("Player " + 2 + "'s Turn");
+				System.out.println(playerTwo.name + " Turn");
 			}
 		}
 	}
@@ -215,7 +218,7 @@ public class Main {
 	public static int getLetterPosition() {
 		int letterNumber = 0;
 		int positionLength = 0;
-		if (turnCount <= 3) {
+		if (turnCount == 1) {
 			System.out.println("Type the position in the format “X Y” (replace X with a letter and Y with a number... eg. A 3).");
 		}
 		do {
@@ -380,7 +383,15 @@ public class Main {
 		}
 		return true;
 	}
-
+	
+	public static boolean isGameDone() {
+		if (isGameWon()) {
+			return true;
+		} else if (isGameTied()) {
+			return true;
+		}
+		return false;
+	}
 	/**
 	 * This loads player 1's file if it is there and creates a new one if it does
 	 * not.
@@ -415,7 +426,7 @@ public class Main {
 			try {
 				objectinputstream.close();
 			} catch (Exception e) {
-				System.out.println("ERROR: " + e.getMessage());
+				System.out.println("");
 			}
 		}
 		runP1();
@@ -428,11 +439,18 @@ public class Main {
 	public static void loadPlayerTwoData() {
 		FileInputStream streamIn = null;
 		ObjectInputStream objectinputstream = null;
+		String name;
 		System.out.println("Player 2's Name: ");
-		String userName = keyb.next();
-		System.out.println("Loading Data...");
+		do {
+			String userName = keyb.next();
+			name = userName;
+			System.out.println("Loading Data...");
+			if (!isNameChecked(name)) {
+				System.out.println("The name has been already taken by player one. Please choose another name.");
+			}
+		} while (!isNameChecked(name));
 		// Assign their name as the filename
-		fileName = userName;
+		fileName = name;
 		try {
 			streamIn = new FileInputStream(fileName);
 			objectinputstream = new ObjectInputStream(streamIn);
@@ -443,22 +461,29 @@ public class Main {
 			if (playerTwo == null) {
 				System.out.println("No player found, Creating new player.");
 				playerTwo = new Player();
-				playerTwo.name = userName;
+				playerTwo.name = name;
 			} else {
 				System.out.println("Loaded!");
 			}
 		} catch (Exception e) {
 			System.out.println("No player found, Creating new player.");
 			playerTwo = new Player();
-			playerTwo.name = userName;
+			playerTwo.name = name;
 		} finally {
 			try {
 				objectinputstream.close();
 			} catch (Exception e) {
-				System.out.println("ERROR: " + e.getMessage());
+				System.out.println("");
 			}
 		}
 		runP2();
+	}
+	
+	public static boolean isNameChecked(String name) {
+		if (name.equalsIgnoreCase(playerOne.name)) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
