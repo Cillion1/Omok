@@ -1,7 +1,7 @@
 /**
  * Description: This class runs our game
  * Author: Dennis Situ
- * Last Updated: May 16, 2016
+ * Last Updated: May 24, 2016
  */
 
 import java.io.FileInputStream;
@@ -44,10 +44,10 @@ public class Main {
 				System.out.println("The game is a tie!");
 				updatePlayerStats();
 			} else if (!playerTurn) {
-				System.out.println(playerOne.name + " Wins");
+				System.out.println(playerOne.name + " Wins!");
 				updatePlayerStats();
 			} else if (playerTurn) {
-				System.out.println(playerTwo.name + " Wins");
+				System.out.println(playerTwo.name + " Wins!");
 			}
 			System.out.println("");
 			System.out.println("(P)lay Again");
@@ -202,10 +202,10 @@ public class Main {
 	public static void switchPlayer() {
 		if (!isGameWon()) {
 			if (playerTurn) {
-				System.out.println(playerOne.name + " Turn");
+				System.out.println(playerOne.name + "'s Turn.");
 				turnCount++;
 			} else {
-				System.out.println(playerTwo.name + " Turn");
+				System.out.println(playerTwo.name + "'s Turn.");
 			}
 		}
 	}
@@ -247,8 +247,7 @@ public class Main {
 				String position = keyb.next();
 				number = Integer.parseInt(position);
 				if (number <= 0 || number > BOARDSIZE) {
-					System.out.println("Invalid Move! Must be a positive number less than "
-									+ BOARDSIZE + ".");
+					System.out.println("Invalid Move! Must be a positive number less than " + BOARDSIZE + ".");
 				}
 			} catch (Exception e) {
 				System.out.println("Invalid Move! Not a possible coordinate.");
@@ -266,15 +265,15 @@ public class Main {
 		do {
 			int x = getLetterPosition();
 			int y = getNumberPosition() - 1;
+			System.out.println("");
 			// Check on if player has already played in position
-			System.out.println(gameBoard[y][x]);
 			if (gameBoard[y][x] == '-') {
 				if (playerTurn) {
 					gameBoard[y][x] = 'X';
 					playerTurn = false;
 					positionNotTaken = true;
 				} else {
-					gameBoard[y][x] = 'O'; // Change to O later
+					gameBoard[y][x] = 'O';
 					playerTurn = true;
 					positionNotTaken = true;
 				}
@@ -291,16 +290,17 @@ public class Main {
 	 * @return boolean true if there is a win. False if there is no win
 	 */
 	public static boolean isGameWon() {
-		// Determine horizontal 5 in a row.
+		// Determine horizontally 5 in a row.
 		for (int col = 0; col <= gameBoard.length - 1; col++) {
 			for (int row = 0; row <= gameBoard.length - 5; row++) {
 				// Assign X or O in letter.
 				char letter = gameBoard[col][row];
 				if (gameBoard[col][row] != '-') {
 					boolean isWin = true;
+					// Check to see if the row ahead up to 5 is not equal to letter
 					for (int i = 1; i < 5; i++) {
 						if (gameBoard[col][row + i] != letter) {
-							isWin = false; //
+							isWin = false;
 							break;
 						}
 					}
@@ -313,9 +313,11 @@ public class Main {
 		// Determine vertically 5 in a row.
 		for (int col = 0; col <= gameBoard.length - 5; col++) {
 			for (int row = 0; row <= gameBoard.length - 1; row++) {
+				// Assign X or O in letter.
 				char letter = gameBoard[col][row];
 				if (gameBoard[col][row] != '-') {
 					boolean isWin = true;
+					// Check to see if the column ahead up to 5 is not equal to letter
 					for (int i = 1; i < 5; i++) {
 						if (gameBoard[col + i][row] != letter) {
 							isWin = false;
@@ -328,12 +330,14 @@ public class Main {
 				}
 			}
 		}
-		// Determine top-right to bottom-left (Works)
+		// Determine top-right to bottom-left 5 in a row
 		for (int col = 0; col <= gameBoard.length - 5; col++) {
 			for (int row = 4; row <= gameBoard.length - 1; row++) {
+				// Assign X or O in letter.
 				char letter = gameBoard[col][row];
 				if (gameBoard[col][row] != '-') {
 					boolean isWin = true;
+					// Check to see if the column down one and row left one is not equal to letter 5 times in a row.
 					for (int i = 1; i < 5; i++) {
 						if (gameBoard[col + i][row - i] != letter) {
 							isWin = false;
@@ -346,12 +350,13 @@ public class Main {
 				}
 			}
 		}
-		// Determine top-left to bottom-right (\)
+		// Determine top-left to bottom-right 5 in a row.
 		for (int col = 0; col <= gameBoard.length - 5; col++) {
 			for (int row = 0; row <= gameBoard.length - 5; row++) {
 				char letter = gameBoard[col][row];
 				if (gameBoard[col][row] != '-') {
 					boolean isWin = true;
+					// Check to see if the column down one and row right one is not equal to letter 5 times in a row.
 					for (int i = 1; i < 5; i++) {
 						if (gameBoard[col + i][row + i] != letter) {
 							isWin = false;
@@ -384,6 +389,10 @@ public class Main {
 		return true;
 	}
 	
+	/**
+	 * This checks to see if the game is done or not
+	 * @return true if the game is tied or won by someone. False if it is not.
+	 */
 	public static boolean isGameDone() {
 		if (isGameWon()) {
 			return true;
@@ -392,6 +401,7 @@ public class Main {
 		}
 		return false;
 	}
+	
 	/**
 	 * This loads player 1's file if it is there and creates a new one if it does
 	 * not.
@@ -479,6 +489,12 @@ public class Main {
 		runP2();
 	}
 	
+	/**
+	 * This checks if the player two name is the same as the player one name
+	 * 
+	 * @param name The player two name
+	 * @return true if player two's name is not the same as player one. False if both names are the same
+	 */
 	public static boolean isNameChecked(String name) {
 		if (name.equalsIgnoreCase(playerOne.name)) {
 			return false;
@@ -487,7 +503,7 @@ public class Main {
 	}
 
 	/**
-	 * This save player 1's stats to the file assign.
+	 * This save player 1's stats to the file assigned.
 	 */
 	public static void savePlayerOneData() {
 		FileOutputStream fout;
@@ -507,7 +523,10 @@ public class Main {
 			System.out.println("ERROR: " + e.getMessage());
 		}
 	}
-
+	
+	/**
+	 * This saves player 2's stats to the file assigned.
+	 */
 	public static void savePlayerTwoData() {
 		FileOutputStream fout;
 		ObjectOutputStream oos = null;
