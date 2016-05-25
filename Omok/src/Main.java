@@ -212,6 +212,7 @@ public class Main {
 
 	/**
 	 * Grabs a letter and return the letter as a integer
+	 * ERROR: Input from user causes an error. Fixed by first using try catch sections and eventually changed to more suitable code.
 	 * 
 	 * @return int Column number
 	 */
@@ -286,6 +287,7 @@ public class Main {
 
 	/**
 	 * Checks if 5 X's or 5 O's are on the board and if the game is won.
+	 * ERROR: 5 in a row would not function correctly. Fixed by trial and error and a few logic steps after finding horizontal
 	 * 
 	 * @return boolean true if there is a win. False if there is no win
 	 */
@@ -405,6 +407,8 @@ public class Main {
 	/**
 	 * This loads player 1's file if it is there and creates a new one if it does
 	 * not.
+	 * ERROR: Saving and loading would nor function normally. Fixed by using system printouts on different places and adjust accordingly.
+	 * 
 	 */
 	public static void loadPlayerOneData() {
 		FileInputStream streamIn = null;
