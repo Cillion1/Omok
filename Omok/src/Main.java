@@ -1,7 +1,7 @@
 /**
  * Description: This class runs our game
  * Author: Dennis Situ
- * Last Updated: May 24, 2016
+ * Last Updated: May 26, 2016
  */
 
 import java.io.FileInputStream;
@@ -20,7 +20,7 @@ public class Main {
 	static char[][] gameBoard = null;
 	static boolean playerTurn = true;
 	static final int BOARDSIZE = 15;
-	static int turnCount = 0;
+	static int turnCount = 1;
 
 	public static void main(String[] args) {
 		runGame();
@@ -32,6 +32,7 @@ public class Main {
 	public static void runGame() {
 		printIntro();
 		boolean restartGame = false;
+		// Plays the game and restart it after
 		do {
 			printPlayerStat();
 			setupBoard();
@@ -39,16 +40,14 @@ public class Main {
 				placePiece();
 				printBoard(gameBoard);
 			} while (!isGameDone());
-
 			if (isGameTied()) {
 				System.out.println("The game is a tie!");
-				updatePlayerStats();
 			} else if (!playerTurn) {
 				System.out.println(playerOne.name + " Wins!");
-				updatePlayerStats();
 			} else if (playerTurn) {
 				System.out.println(playerTwo.name + " Wins!");
 			}
+			updatePlayerStats();
 			System.out.println("");
 			System.out.println("(P)lay Again");
 			System.out.println("(Q)uit");
@@ -85,7 +84,6 @@ public class Main {
 			fileName = playerTwo.name;
 			savePlayerTwoData();
 		} else if (playerTurn) { // Prints and update status if Player one won.
-			System.out.println("Player 2 Wins");
 			playerTwo.win++;
 			playerTwo.total++;
 			playerTwo.winStreak++;
@@ -201,27 +199,26 @@ public class Main {
 	 */
 	public static void switchPlayer() {
 		if (!isGameWon()) {
+			System.out.println("Turn " + turnCount);
 			if (playerTurn) {
 				System.out.println(playerOne.name + "'s Turn.");
-				turnCount++;
-			} else {
+			} else if (!playerTurn) {
 				System.out.println(playerTwo.name + "'s Turn.");
+			}
+			if (turnCount <= 1) {
+				System.out.println("Type the position in the format “X Y” (replace X with a letter and Y with a number... eg. A 3).");
 			}
 		}
 	}
 
 	/**
 	 * Grabs a letter and return the letter as a integer
-	 * ERROR: Input from user causes an error. Fixed by first using try catch sections and eventually changed to more suitable code.
 	 * 
 	 * @return int Column number
 	 */
 	public static int getLetterPosition() {
 		int letterNumber = 0;
 		int positionLength = 0;
-		if (turnCount == 1) {
-			System.out.println("Type the position in the format “X Y” (replace X with a letter and Y with a number... eg. A 3).");
-		}
 		do {
 			String position = keyb.next();
 			positionLength = position.length();
@@ -272,12 +269,12 @@ public class Main {
 				if (playerTurn) {
 					gameBoard[y][x] = 'X';
 					playerTurn = false;
-					positionNotTaken = true;
 				} else {
 					gameBoard[y][x] = 'O';
 					playerTurn = true;
-					positionNotTaken = true;
+					turnCount++;
 				}
+				positionNotTaken = true;
 			} else {
 				System.out.println("Invalid Move! Position is taken.");
 				System.out.println("");
@@ -287,7 +284,6 @@ public class Main {
 
 	/**
 	 * Checks if 5 X's or 5 O's are on the board and if the game is won.
-	 * ERROR: 5 in a row would not function correctly. Fixed by trial and error and a few logic steps after finding horizontal
 	 * 
 	 * @return boolean true if there is a win. False if there is no win
 	 */
@@ -407,8 +403,6 @@ public class Main {
 	/**
 	 * This loads player 1's file if it is there and creates a new one if it does
 	 * not.
-	 * ERROR: Saving and loading would nor function normally. Fixed by using system printouts on different places and adjust accordingly.
-	 * 
 	 */
 	public static void loadPlayerOneData() {
 		FileInputStream streamIn = null;
