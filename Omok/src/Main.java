@@ -1,7 +1,7 @@
 /**
  * Description: This class runs our game
  * Author: Dennis Situ
- * Last Updated: May 26, 2016
+ * Last Updated: June 1, 2016
  */
 
 import java.io.FileInputStream;
@@ -32,14 +32,16 @@ public class Main {
 	public static void runGame() {
 		printIntro();
 		boolean restartGame = false;
-		// Plays the game and restart it after
+		// Loop is done to have the game restart back to the state before the game starts.
 		do {
 			printPlayerStat();
 			setupBoard();
+			// Place pieces and show board after until one player wins or game is tied
 			do {
 				placePiece();
 				printBoard(gameBoard);
 			} while (!isGameDone());
+			// Prints out the following message depending on how game is won.
 			if (isGameTied()) {
 				System.out.println("The game is a tie!");
 			} else if (!playerTurn) {
@@ -47,13 +49,18 @@ public class Main {
 			} else if (playerTurn) {
 				System.out.println(playerTwo.name + " Wins!");
 			}
+			// Updates the player stats and prints out the option to play again or not
 			updatePlayerStats();
 			System.out.println("");
 			System.out.println("(P)lay Again");
 			System.out.println("(Q)uit");
 			boolean quitGame = false;
+			// Asks for user input and checks to see if P or Q is clicked
 			do {
 				String userDecision = keyb.next();
+				// If 'q' is pressed, quitGame only becomes true allowing it to escape both loops as restartGame is false still. 
+				// If 'p' is pressed, quitGame and restartGame becomes both true allowing it to escape the quitGame loop, but get sent back
+				// to the beginning
 				if (userDecision.equalsIgnoreCase("Q")) {
 					quitGame = true;
 				} else if (userDecision.equalsIgnoreCase("P")) {
@@ -63,7 +70,9 @@ public class Main {
 					System.out.println("Invalid Command");
 				}
 			} while (!quitGame);
+			// Assigns game setup back to normal
 			playerTurn = true;
+			turnCount = 1;
 		} while (restartGame);
 	}
 	
@@ -71,6 +80,7 @@ public class Main {
 	 * This updates the player stats after the game is finished and saves the players data to a file.
 	 */
 	public static void updatePlayerStats() {
+		// Stats are added depending on how game is finished
 		if (!playerTurn) {
 			playerOne.win++;
 			playerOne.total++;
@@ -83,7 +93,7 @@ public class Main {
 			playerTwo.winStreak = 0;
 			fileName = playerTwo.name;
 			savePlayerTwoData();
-		} else if (playerTurn) { // Prints and update status if Player one won.
+		} else if (playerTurn) {
 			playerTwo.win++;
 			playerTwo.total++;
 			playerTwo.winStreak++;
@@ -112,12 +122,13 @@ public class Main {
 	 * Get input from the user and check to see if the letter assigned is
 	 * inputed
 	 */
-	public static void startGame() {
+	public static void startGamePrompt() {
 		System.out.println("(P)lay");
 		System.out.println("");
 		System.out.println("Enter your choice: ");
 		boolean gameStart = false;
 		do {
+			// Grabs input and checks to see if the input is 'p' or not
 			String numberStart = keyb.next();
 			if (numberStart.equalsIgnoreCase("p")) {
 				gameStart = true;
@@ -138,7 +149,7 @@ public class Main {
 		savePlayerOneData();
 		savePlayerTwoData();
 		System.out.println("");
-		startGame();
+		startGamePrompt();
 	}
 
 	/**
@@ -152,7 +163,7 @@ public class Main {
 		System.out.println("To play omok, each player take turns to place pieces on the board. "
 						+ "Getting 5 pieces in a line either vertically, horizontally, or diagonally will achieve a win.");
 		System.out.println("");
-		startGame();
+		startGamePrompt();
 	}
 
 	/**
@@ -177,6 +188,7 @@ public class Main {
 	 * @param char[][] The array holding the board
 	 */
 	public static void printBoard(char[][] data) {
+		// Prints out the x-axis and y-axis reference along with printing the board
 		System.out.println("   A B C D E F G H I J K L M N O");
 		for (int row = 0; row < data.length; row++) {
 			// Prints out the numbers on the side
@@ -219,6 +231,7 @@ public class Main {
 	public static int getLetterPosition() {
 		int letterNumber = 0;
 		int positionLength = 0;
+		// Grabs user input and converts a letter to a number and checks if it is valid
 		do {
 			String position = keyb.next();
 			positionLength = position.length();
@@ -240,6 +253,7 @@ public class Main {
 	 */
 	public static int getNumberPosition() {
 		int number = 0;
+		// Grabs user input and checks to see if it is a valid number for the board
 		do {
 			try {
 				String position = keyb.next();
@@ -258,14 +272,15 @@ public class Main {
 	 * Inserts two numbers on the 2D array and assign it as X or O
 	 */
 	public static void placePiece() {
-		// Assign numbers from user
 		boolean positionNotTaken = false;
 		do {
+			// Calls both methods and uses both return values to assign to gameBoard[][]
 			int x = getLetterPosition();
 			int y = getNumberPosition() - 1;
 			System.out.println("");
 			// Check on if player has already played in position
 			if (gameBoard[y][x] == '-') {
+				// Assign 'X' or 'O' depending on player one or two
 				if (playerTurn) {
 					gameBoard[y][x] = 'X';
 					playerTurn = false;
@@ -291,7 +306,7 @@ public class Main {
 		// Determine horizontally 5 in a row.
 		for (int col = 0; col <= gameBoard.length - 1; col++) {
 			for (int row = 0; row <= gameBoard.length - 5; row++) {
-				// Assign X or O in letter.
+				// Save current char after placePiece has finished
 				char letter = gameBoard[col][row];
 				if (gameBoard[col][row] != '-') {
 					boolean isWin = true;
@@ -311,7 +326,7 @@ public class Main {
 		// Determine vertically 5 in a row.
 		for (int col = 0; col <= gameBoard.length - 5; col++) {
 			for (int row = 0; row <= gameBoard.length - 1; row++) {
-				// Assign X or O in letter.
+				// Save current char after placePiece has finished
 				char letter = gameBoard[col][row];
 				if (gameBoard[col][row] != '-') {
 					boolean isWin = true;
@@ -331,7 +346,7 @@ public class Main {
 		// Determine top-right to bottom-left 5 in a row
 		for (int col = 0; col <= gameBoard.length - 5; col++) {
 			for (int row = 4; row <= gameBoard.length - 1; row++) {
-				// Assign X or O in letter.
+				// Save current char after placePiece has finished
 				char letter = gameBoard[col][row];
 				if (gameBoard[col][row] != '-') {
 					boolean isWin = true;
@@ -351,6 +366,7 @@ public class Main {
 		// Determine top-left to bottom-right 5 in a row.
 		for (int col = 0; col <= gameBoard.length - 5; col++) {
 			for (int row = 0; row <= gameBoard.length - 5; row++) {
+				// Save current char after placePiece has finished
 				char letter = gameBoard[col][row];
 				if (gameBoard[col][row] != '-') {
 					boolean isWin = true;
@@ -376,9 +392,9 @@ public class Main {
 	 * @return boolean false if the game is tied. True if game is not tied.
 	 */
 	public static boolean isGameTied() {
-		// Need to check every index
 		for (int col = 0; col < gameBoard.length; col++) {
 			for (int row = 0; row < gameBoard.length; row++) {
+				// If a '-' still exists on the board, return false, otherwise return true
 				if (gameBoard[col][row] == '-') {
 					return false;
 				}
@@ -413,12 +429,12 @@ public class Main {
 		// Assign their name as the filename
 		fileName = userName;
 		try {
+			// Attempts to load a file based on the name user types
 			streamIn = new FileInputStream(fileName);
 			objectinputstream = new ObjectInputStream(streamIn);
 			// Reads the file from the player
 			playerOne = (Player) objectinputstream.readObject();
-			// Checks to see if player exists or not and creates a new player if
-			// it does not exist
+			// Creates new player if file cannot be found
 			if (playerOne == null) {
 				System.out.println("No player found, Creating new player.");
 				playerOne = new Player();
@@ -453,6 +469,7 @@ public class Main {
 			String userName = keyb.next();
 			name = userName;
 			System.out.println("Loading Data...");
+			// Check to see if second player name is not the same as first player
 			if (!isNameChecked(name)) {
 				System.out.println("The name has been already taken by player one. Please choose another name.");
 			}
@@ -460,12 +477,12 @@ public class Main {
 		// Assign their name as the filename
 		fileName = name;
 		try {
+			// Attempts to load a file based on the name user types
 			streamIn = new FileInputStream(fileName);
 			objectinputstream = new ObjectInputStream(streamIn);
 			// Reads the file from the player
 			playerTwo = (Player) objectinputstream.readObject();
-			// Checks to see if player exists or not and creates a new player if
-			// it does not exist
+			// Creates new player if file cannot be found
 			if (playerTwo == null) {
 				System.out.println("No player found, Creating new player.");
 				playerTwo = new Player();
@@ -478,6 +495,7 @@ public class Main {
 			playerTwo = new Player();
 			playerTwo.name = name;
 		} finally {
+			// Closes input stream
 			try {
 				objectinputstream.close();
 			} catch (Exception e) {
@@ -516,6 +534,7 @@ public class Main {
 			System.out.println("ERROR: " + e.getMessage());
 		}
 		try {
+			// Closes Object Output Stream
 			oos.close();
 		} catch (Exception e) {
 			System.out.println("ERROR: " + e.getMessage());
@@ -538,6 +557,7 @@ public class Main {
 			System.out.println("ERROR: " + e.getMessage());
 		}
 		try {
+			// Closes Object Output Stream
 			oos.close();
 		} catch (Exception e) {
 			System.out.println("ERROR: " + e.getMessage());
