@@ -1,7 +1,7 @@
 /**
  * Description: This class runs our game
  * Author: Dennis Situ
- * Last Updated: June 1, 2016
+ * Last Updated: June 3, 2016
  */
 
 import java.io.FileInputStream;
@@ -21,6 +21,7 @@ public class Main {
 	static boolean playerTurn = true;
 	static final int BOARDSIZE = 15;
 	static int turnCount = 1;
+	static boolean forfeit = false;
 
 	public static void main(String[] args) {
 		runGame();
@@ -38,15 +39,23 @@ public class Main {
 			setupBoard();
 			// Place pieces and show board after until one player wins or game is tied
 			do {
-				placePiece();
-				printBoard(gameBoard);
+				if (!forfeit) {
+					placePiece();
+					printBoard(gameBoard);
+				}
 			} while (!isGameDone());
 			// Prints out the following message depending on how game is won.
 			if (isGameTied()) {
 				System.out.println("The game is a tie!");
 			} else if (!playerTurn) {
+				if (forfeit) {
+					System.out.println(playerTwo.name + " forfeits!");
+				}
 				System.out.println(playerOne.name + " Wins!");
 			} else if (playerTurn) {
+				if (forfeit) {
+					System.out.println(playerOne.name + " forfeits!");
+				}
 				System.out.println(playerTwo.name + " Wins!");
 			}
 			// Updates the player stats and prints out the option to play again or not
@@ -73,6 +82,7 @@ public class Main {
 			// Assigns game setup back to normal
 			playerTurn = true;
 			turnCount = 1;
+			forfeit = false;
 		} while (restartGame);
 	}
 	
@@ -211,20 +221,22 @@ public class Main {
 	 */
 	public static void switchPlayer() {
 		if (!isGameWon()) {
-			System.out.println("Turn " + turnCount);
-			if (playerTurn) {
-				System.out.println(playerOne.name + "'s Turn.");
-			} else if (!playerTurn) {
-				System.out.println(playerTwo.name + "'s Turn.");
-			}
-			if (turnCount <= 1) {
-				System.out.println("Type the position in the format “X Y” (replace X with a letter and Y with a number... eg. A 3).");
+			if (!forfeit) {
+				System.out.println("Turn " + turnCount);
+				if (playerTurn) {
+					System.out.println(playerOne.name + "'s Turn.");
+				} else if (!playerTurn) {
+					System.out.println(playerTwo.name + "'s Turn.");
+				}
+				if (turnCount <= 1) {
+					System.out.println("Type the position in the format “X Y” (replace X with a letter and Y with a number... eg. A 3). Type 'FF' to forfeit the game.");
+				}
 			}
 		}
 	}
 
 	/**
-	 * Grabs a letter and return the letter as a integer
+	 * Grabs a letter and return the letter as a integer and breaks out of loop if user forfeits
 	 * 
 	 * @return int Column number
 	 */
@@ -234,6 +246,10 @@ public class Main {
 		// Grabs user input and converts a letter to a number and checks if it is valid
 		do {
 			String position = keyb.next();
+			if (position.equalsIgnoreCase("FF")) {
+				forfeit = true;
+				break;
+			}
 			positionLength = position.length();
 			char c = position.toLowerCase().charAt(0);
 			letterNumber = c - 'a';
@@ -253,18 +269,20 @@ public class Main {
 	 */
 	public static int getNumberPosition() {
 		int number = 0;
-		// Grabs user input and checks to see if it is a valid number for the board
-		do {
-			try {
-				String position = keyb.next();
-				number = Integer.parseInt(position);
-				if (number <= 0 || number > BOARDSIZE) {
-					System.out.println("Invalid Move! Must be a positive number less than " + BOARDSIZE + ".");
+		if (!forfeit) {
+			// Grabs user input and checks to see if it is a valid number for the board
+			do {
+				try {
+					String position = keyb.next();
+					number = Integer.parseInt(position);
+					if (number <= 0 || number > BOARDSIZE) {
+						System.out.println("Invalid Move! Must be a positive number less than " + BOARDSIZE + ".");
+					}
+				} catch (Exception e) {
+					System.out.println("Invalid Move! Not a possible coordinate.");
 				}
-			} catch (Exception e) {
-				System.out.println("Invalid Move! Not a possible coordinate.");
-			}
-		} while (number > BOARDSIZE || number <= 0);
+			} while (number > BOARDSIZE || number <= 0);
+		}
 		return number;
 	}
 
@@ -278,6 +296,9 @@ public class Main {
 			int x = getLetterPosition();
 			int y = getNumberPosition() - 1;
 			System.out.println("");
+			if (forfeit) {
+				break;
+			}
 			// Check on if player has already played in position
 			if (gameBoard[y][x] == '-') {
 				// Assign 'X' or 'O' depending on player one or two
@@ -411,6 +432,8 @@ public class Main {
 		if (isGameWon()) {
 			return true;
 		} else if (isGameTied()) {
+			return true;
+		} else if (forfeit) {
 			return true;
 		}
 		return false;
