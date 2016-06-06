@@ -210,8 +210,14 @@ public class Main {
 			for (int col = 0; col < data[row].length; col++) {
 				System.out.print(data[row][col] + " ");
 			}
+			if (row >= 9) {
+				System.out.print(row + 1 + " ");
+			} else {
+				System.out.print((row + 1) + " ");
+			}
 			System.out.println();
 		}
+		System.out.println("   A B C D E F G H I J K L M N O");
 		System.out.println("");
 		switchPlayer();
 	}
@@ -313,7 +319,6 @@ public class Main {
 				positionNotTaken = true;
 			} else {
 				System.out.println("Invalid Move! Position is taken.");
-				System.out.println("");
 			}
 		} while (!positionNotTaken);
 	}
