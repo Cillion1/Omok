@@ -1,7 +1,7 @@
 /**
  * Description: This class runs our game
  * Author: Dennis Situ
- * Last Updated: June 3, 2016
+ * Last Updated: June 7, 2016
  */
 
 import java.io.FileInputStream;
@@ -452,10 +452,19 @@ public class Main {
 		FileInputStream streamIn = null;
 		ObjectInputStream objectinputstream = null;
 		System.out.println("Player 1's Name: ");
-		String userName = keyb.next();
+		String name = "";
+		do {
+			String userName = keyb.next();
+			name = userName;
+			if (userName.length() <= 14) {
+				break;
+			} else {
+				System.out.println("The name is too long, please use a name shorter than 15 characters.");
+			}
+		} while (true);
 		System.out.println("Loading Data...");
 		// Assign their name as the filename
-		fileName = userName;
+		fileName = name;
 		try {
 			// Attempts to load a file based on the name user types
 			streamIn = new FileInputStream(fileName);
@@ -466,14 +475,14 @@ public class Main {
 			if (playerOne == null) {
 				System.out.println("No player found, Creating new player.");
 				playerOne = new Player();
-				playerOne.name = userName;
+				playerOne.name = name;
 			} else {
 				System.out.println("Loaded!");
 			}
 		} catch (Exception e) {
 			System.out.println("No player found, Creating new player.");
 			playerOne = new Player();
-			playerOne.name = userName;
+			playerOne.name = name;
 		} finally {
 			try {
 				objectinputstream.close();
@@ -496,12 +505,16 @@ public class Main {
 		do {
 			String userName = keyb.next();
 			name = userName;
-			System.out.println("Loading Data...");
 			// Check to see if second player name is not the same as first player
 			if (!isNameChecked(name)) {
 				System.out.println("The name has been already taken by player one. Please choose another name.");
+			} else if (userName.length() <= 14) {
+				break;
+			} else {
+				System.out.println("The name is too long, please use a name shorter than 15 characters.");
 			}
-		} while (!isNameChecked(name));
+		} while (true);
+		System.out.println("Loading Data...");
 		// Assign their name as the filename
 		fileName = name;
 		try {
